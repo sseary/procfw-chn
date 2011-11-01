@@ -309,7 +309,7 @@ static int display_callback(struct MenuEntry* entry, char *buf, int size)
 		name = plugin->name;
 	}
 
-	sprintf(fmt, "%%.%ds [%%s]", 48 - 3 - strlen(get_plugin_name(plugin->type)));
+	sprintf(fmt, "%%.%ds [%%s]", (((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? 56 : 48) - 3 - strlen(get_plugin_name(plugin->type)));///|sprintf(fmt, "%%.%ds [%%s]", 48 - 3 - strlen(get_plugin_name(plugin->type)));
 	sprintf(buf, fmt, name, get_plugin_name(plugin->type));
 	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", buf, get_bool_name(plugin->enabled));///|"%-48s %-11s"
 

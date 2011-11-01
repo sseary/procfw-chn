@@ -1,5 +1,5 @@
 TARGET = permanent
-OBJS = main.o crypto.o kirk_engine.o imports.o KModule.o
+OBJS = main.o crypto.o kirk_engine.o imports.o KModule.o printf_chs.o
 
 INCDIR = ../../include
 CFLAGS = -Os -G0 -Wall -mno-gpopt

@@ -205,12 +205,12 @@ int kirk_CMD10(void* inbuff, int insize)
 
 		if(memcmp(cmac_header_hash, header->CMAC_header_hash, 16) != 0)
         {
-            printf("header hash invalid\n");
+            //printf("header hash invalid\n");///-
             return KIRK_HEADER_HASH_INVALID;
         }
 		if(memcmp(cmac_data_hash, header->CMAC_data_hash, 16) != 0)
         {
-            printf("data hash invalid\n");
+            //printf("data hash invalid\n");///-
             return KIRK_DATA_HASH_INVALID;
         }
 
@@ -348,7 +348,7 @@ int kirk_forge(u8* inbuff, int insize)
       if(memcmp(cmac_data_hash, header->CMAC_data_hash, 16) != 0) {
       //printf("data hash invalid, correcting...\n");
     } else {
-         printf("data hash is already valid!\n");
+         //printf("data hash is already valid!\n");///-
          return 100;
       }
       // Forge collision for data hash

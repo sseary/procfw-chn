@@ -100,9 +100,9 @@ static SceUID load_start_module(char *path)
 	Printf_CHS_ScreenInit();///|pspDebugScreenInit();
 
 	modid = kuKernelLoadModule(path, 0, NULL);
-	Printf_CHS_ScreenPrintf("\241\242\241\246\241\244\241\243 -> 0x%08X\n", modid);///|pspDebugScreenPrintf("load module -> 0x%08X\n", modid);
+	Printf_CHS_ScreenPrintf("加载模块 -> 0x%08X\n", modid);///|pspDebugScreenPrintf("load module -> 0x%08X\n", modid);
 	modid = sceKernelStartModule(modid, strlen(path) + 1, path, NULL, NULL);
-	Printf_CHS_ScreenPrintf("\241\245\241\241\241\244\241\243 -> 0x%08X\n", modid);///|pspDebugScreenPrintf("start module -> 0x%08X\n", modid);
+	Printf_CHS_ScreenPrintf("启动模块 -> 0x%08X\n", modid);///|pspDebugScreenPrintf("start module -> 0x%08X\n", modid);
 
 	return modid;
 }

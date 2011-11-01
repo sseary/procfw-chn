@@ -34,7 +34,7 @@
 #include "prodebug.h"
 #include "main.h"
 
-static char g_bottom_info[MAX_SCREEN_X+1];
+static char g_bottom_info[MAX_SCREEN_X+1+12];///|static char g_bottom_info[MAX_SCREEN_X+1];
 static int g_bottom_info_color;
 static int g_frame_count = 0;
 
@@ -74,7 +74,7 @@ static void draw_bottom_line(void)
 
 	set_screen_xy(0, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? (NEW_MAX_SCREEN_Y-4) : (NEW_MAX_SCREEN_Y-5));///|set_screen_xy(0, MAX_SCREEN_Y-5);
 
-	for(i=0; i<NEW_MAX_SCREEN_X; ++i) {
+	for(i=0; i<NEW_MAX_SCREEN_X; ++i) {///|for(i=0; i<MAX_SCREEN_X; ++i) {
 		write_string_with_color("*", 0xFF);
 	}
 }
