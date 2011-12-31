@@ -359,7 +359,7 @@ void input_dump_kmem(void)
 
 	if (ctl.Buttons & PSP_CTRL_LTRIGGER) {
 		dump_kmem = 1;
-		Printf_CHS_ScreenPrintf("\241\247\241\244\241\247\241\242\241\246\241\241\241\250\241\242\241\243 ms0:/KMEM.BIN\241\245 ms0:/SEED.BIN\r\n");///|pspDebugScreenPrintf("Kernel memory will be dumped into ms0:/KMEM.BIN and ms0:/SEED.BIN\r\n");
+		CHS_ScreenPrintf("\241\247\241\244\241\247\241\242\241\246\241\241\241\250\241\242\241\243 ms0:/KMEM.BIN\241\245 ms0:/SEED.BIN\r\n");///|pspDebugScreenPrintf("Kernel memory will be dumped into ms0:/KMEM.BIN and ms0:/SEED.BIN\r\n");
 	}
 }
 
@@ -530,7 +530,7 @@ int main(int argc, char * argv[])
 
 	printk_init("ms0:/fastrecovery.txt");
 	printk("Hello exploit\r\n");
-	Printf_CHS_ScreenInit();///|pspDebugScreenInit();
+	CHS_ScreenInit();///|pspDebugScreenInit();
 
 	input_dump_kmem();
 

@@ -91,9 +91,9 @@ int menu_draw(void)
 	// show menu list
 	blit_set_color(0xffffff,0x8000ff00);
 	if(g_messages == g_messages_chs) {///|blit_string(pointer[0], pointer[1], g_messages[MSG_PRO_VSH_MENU]);
-		blit_string_chs(pointer[0], pointer[1], g_messages[MSG_PRO_VSH_MENU]);
+		blit_string_chn(1, pointer[0], pointer[1], g_messages[MSG_PRO_VSH_MENU]);
 	} else if(g_messages == g_messages_cht) {
-		blit_string_cht(pointer[0], pointer[1], g_messages[MSG_PRO_VSH_MENU]);
+		blit_string_chn(2, pointer[0], pointer[1], g_messages[MSG_PRO_VSH_MENU]);
 	} else {
 		blit_string(pointer[0], pointer[1], g_messages[MSG_PRO_VSH_MENU]);
 	}
@@ -142,9 +142,9 @@ int menu_draw(void)
 
 			cur_menu = max_menu;
 			if(g_messages == g_messages_chs) {///|blit_string(xPointer, (pointer[5] + cur_menu)*8, msg);
-				blit_string_chs(xPointer, (pointer[5] + cur_menu)*12, msg);
+				blit_string_chn(1, xPointer, (pointer[5] + cur_menu)*12, msg);
 			} else if(g_messages == g_messages_cht) {
-				blit_string_cht(xPointer, (pointer[5] + cur_menu)*12, msg);
+				blit_string_chn(2, xPointer, (pointer[5] + cur_menu)*12, msg);
 			} else {
 				blit_string(xPointer, (pointer[5] + cur_menu)*8, msg);
 			}
@@ -153,9 +153,9 @@ int menu_draw(void)
 			if(msg) {
 				blit_set_color(item_fcolor[max_menu],bc);
 				if(g_messages == g_messages_chs) {///|blit_string( (pointer[6] * 8) + 128, (pointer[5] + cur_menu)*8, msg);
-					blit_string_chs((pointer[6] * 6) + 176, (pointer[5] + cur_menu)*12, msg);
+					blit_string_chn(1, (pointer[6] * 6) + 176, (pointer[5] + cur_menu)*12, msg);
 				} else if(g_messages == g_messages_cht) {
-					blit_string_cht((pointer[6] * 6) + 176, (pointer[5] + cur_menu)*12, msg);
+					blit_string_chn(2, (pointer[6] * 6) + 176, (pointer[5] + cur_menu)*12, msg);
 				} else {
 					blit_string( (pointer[6] * 8) + 128, (pointer[5] + cur_menu)*8, msg);
 				}

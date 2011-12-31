@@ -50,9 +50,9 @@ static void write_string_with_color(const char *str, int color)
 	}
 	
 	if(g_messages == g_messages_chs) {///|printf(str);
-		proDebugScreenPrintf_chs(str);
+		proDebugScreenPrintf_chn(1, str);
 	} else if(g_messages == g_messages_cht) {
-		proDebugScreenPrintf_cht(str);
+		proDebugScreenPrintf_chn(2, str);
 	} else {
 		printf(str);
 	}
@@ -90,9 +90,9 @@ static void set_line_backcolor(int x, int y, int color)
 
 	for(i=0; i<NEW_MAX_SCREEN_X; ++i) {///|for(i=0; i<MAX_SCREEN_X; ++i) {
 		if(g_messages == g_messages_chs) {///|proDebugScreenPrintf(" ");
-			proDebugScreenPrintf_chs(" ");
+			proDebugScreenPrintf_chn(1, " ");
 		} else if(g_messages == g_messages_cht) {
-			proDebugScreenPrintf_cht(" ");
+			proDebugScreenPrintf_chn(2, " ");
 		} else {
 			proDebugScreenPrintf(" ");
 		}

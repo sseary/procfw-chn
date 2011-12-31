@@ -54,15 +54,7 @@ void proDebugScreenPrintf(const char *fmt, ...); //__attribute__((format(printf,
   * @param fmt - Format string to print
   * @param ... - Arguments
   */
-void proDebugScreenPrintf_chs(const char *fmt, ...); //__attribute__((format(printf,1,2)));///+
-
-/**
-  * Do a printf to the debug screen.
-  *
-  * @param fmt - Format string to print
-  * @param ... - Arguments
-  */
-void proDebugScreenPrintf_cht(const char *fmt, ...); //__attribute__((format(printf,1,2)));///+
+void proDebugScreenPrintf_chn(int mode, const char *fmt, ...); //__attribute__((format(printf,1,2)));///+
 
 /**
   * Do a printf to the debug screen.
@@ -186,6 +178,11 @@ int proDebugScreenGetY(void);
   * Clear the debug screen.
   */
 void proDebugScreenClear(void);
+
+/**
+  * Clear the debug screen.
+  */
+void proDebugScreenClear_chn(int mode);///+
 
 /**
   * Print non-nul terminated strings.

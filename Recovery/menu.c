@@ -1026,16 +1026,12 @@ static void select_language(void)
 		case PSP_SYSTEMPARAM_LANGUAGE_CHINESE_TRADITIONAL:
 			g_messages = (const char**)apply_language("recovery_cht.txt");
 			if(g_messages == g_messages_en)///+
-			{
 				g_messages = g_messages_cht;
-			}
 			break;
 		case PSP_SYSTEMPARAM_LANGUAGE_CHINESE_SIMPLIFIED:
 			g_messages = (const char**)apply_language("recovery_chs.txt");
 			if(g_messages == g_messages_en)///+
-			{
 				g_messages = g_messages_chs;
-			}
 			break;
 		default:
 			g_messages = g_messages_en;

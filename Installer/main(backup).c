@@ -63,7 +63,7 @@ PSP_MODULE_INFO("PROUpdater", 0x0800, 1, 0);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU);
 
 #define VERSION_STR "PRO-B"
-#define printf Printf_CHS_ScreenPrintf///|#define printf pspDebugScreenPrintf
+#define printf CHS_ScreenPrintf///|#define printf pspDebugScreenPrintf
 
 int psp_model = 0;
 u32 psp_fw_version;
@@ -556,7 +556,7 @@ int main(int argc, char *argv[])
 	u32 key;
 
 	memset(&stat, 0, sizeof(stat));
-	Printf_CHS_ScreenInit();///|pspDebugScreenInit();
+	CHS_ScreenInit();///|pspDebugScreenInit();
 	psp_fw_version = sceKernelDevkitVersion();
 
 #ifdef CONFIG_620
@@ -635,8 +635,11 @@ version_OK:
 		case PSP_1000:
 			printf("检测到 PSP FAT 1000 ....\n");///|printf("PSP FAT 1000 Detected ....\n");
 			break;
+		case PSP_11000:
+			printf("检测到 PSP E1000 ....\n");///|printf("PSP STREET E1000 Detected ....\n");
+			break;
 		default:
-			printf("PSP型号未知 0%dg\n", psp_model+1);///|printf("Unkown PSP model 0%dg\n", psp_model+1);
+			printf("未知PSP型号 0%dg\n", psp_model+1);///|printf("Unknown PSP model 0%dg\n", psp_model+1);
 			break;
 	}
 

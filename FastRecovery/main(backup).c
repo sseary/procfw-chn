@@ -359,7 +359,7 @@ void input_dump_kmem(void)
 
 	if (ctl.Buttons & PSP_CTRL_LTRIGGER) {
 		dump_kmem = 1;
-		Printf_CHS_ScreenPrintf("内核内存将被转存到 ms0:/KMEM.BIN和 ms0:/SEED.BIN\r\n");///|pspDebugScreenPrintf("Kernel memory will be dumped into ms0:/KMEM.BIN and ms0:/SEED.BIN\r\n");
+		CHS_ScreenPrintf("内核内存将被转存到 ms0:/KMEM.BIN和 ms0:/SEED.BIN\r\n");///|pspDebugScreenPrintf("Kernel memory will be dumped into ms0:/KMEM.BIN and ms0:/SEED.BIN\r\n");
 	}
 }
 
@@ -530,7 +530,7 @@ int main(int argc, char * argv[])
 
 	printk_init("ms0:/fastrecovery.txt");
 	printk("Hello exploit\r\n");
-	Printf_CHS_ScreenInit();///|pspDebugScreenInit();
+	CHS_ScreenInit();///|pspDebugScreenInit();
 
 	input_dump_kmem();
 

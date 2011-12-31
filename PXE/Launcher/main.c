@@ -406,7 +406,7 @@ void write_files(const char *base)
 	newsize = gzip_decompress(file_buffer, installer, size_installer);
 
 	if(newsize < 0) {
-		Printf_CHS_ScreenPrintf("\241\256\241\251\241\253\241\260\241\243\241\263\241\246\241\257 %d\n", newsize);///|pspDebugScreenPrintf("cannot decompress installer %d\n", newsize);
+		CHS_ScreenPrintf("\241\256\241\251\241\253\241\260\241\243\241\263\241\246\241\257 %d\n", newsize);///|pspDebugScreenPrintf("cannot decompress installer %d\n", newsize);
 
 		return;
 	}
@@ -418,7 +418,7 @@ void write_files(const char *base)
 	newsize = gzip_decompress(file_buffer, Rebootex_prx, size_Rebootex_prx);
 	
 	if(newsize < 0) {
-		Printf_CHS_ScreenPrintf("\241\256\241\251\241\253\241\260rebootex %d\n", newsize);///|pspDebugScreenPrintf("cannot decompress rebootex %d\n", newsize);
+		CHS_ScreenPrintf("\241\256\241\251\241\253\241\260rebootex %d\n", newsize);///|pspDebugScreenPrintf("cannot decompress rebootex %d\n", newsize);
 		
 		return;
 	}
@@ -590,7 +590,7 @@ void do_exploit(void)
 //entry point
 int main(int argc, char * argv[])
 {
-	Printf_CHS_ScreenInit();///|pspDebugScreenInit();
+	CHS_ScreenInit();///|pspDebugScreenInit();
 
 	psp_fw_version = sceKernelDevkitVersion();
 
@@ -618,7 +618,7 @@ int main(int argc, char * argv[])
 	}
 #endif
 
-	Printf_CHS_ScreenPrintf("\241\244\241\255\241\242\241\261\241\252\241\246\241\257\241\245\241\262\241\247\241\254\241\250FW(0x%08X)\241\241\n", (uint)psp_fw_version);///|pspDebugScreenPrintf("Sorry. This program doesn't support your FW(0x%08X).\n", (uint)psp_fw_version);
+	CHS_ScreenPrintf("\241\244\241\255\241\242\241\261\241\252\241\246\241\257\241\245\241\262\241\247\241\254\241\250FW(0x%08X)\241\241\n", (uint)psp_fw_version);///|pspDebugScreenPrintf("Sorry. This program doesn't support your FW(0x%08X).\n", (uint)psp_fw_version);
 	sceKernelDelayThread(5*1000000);
 	goto exit;
 

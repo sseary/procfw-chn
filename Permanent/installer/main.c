@@ -24,7 +24,7 @@ PSP_HEAP_SIZE_KB(1*1024);
 #define CTRL_DELAY   100000
 #define CTRL_DEADZONE_DELAY 500000
 
-#define printf Printf_CHS_ScreenPrintf///|#define printf pspDebugScreenPrintf
+#define printf CHS_ScreenPrintf///|#define printf pspDebugScreenPrintf
 
 static u8 buf[64*1024] __attribute__((aligned(64)));
 static u8 buf1[64*1024] __attribute__((aligned(64)));
@@ -785,7 +785,7 @@ int main()
 {
 	int fw_version, ret;
 
-	Printf_CHS_ScreenInit();
+	CHS_ScreenInit();
 	printf("6.20 PRO Permanent Patch By Team PRO\n");
 	fw_version = sceKernelDevkitVersion();
 

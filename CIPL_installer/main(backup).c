@@ -27,7 +27,7 @@ PSP_MAIN_THREAD_ATTR(PSP_THREAD_ATTR_VSH);
 #define VERSION_STR	"6.60"
 #endif
 
-#define printf Printf_CHS_ScreenPrintf///|#define printf pspDebugScreenPrintf
+#define printf CHS_ScreenPrintf///|#define printf pspDebugScreenPrintf
 #define WHITE 0xFFFFF1
 #define GREEN 0x0000FF00
 
@@ -112,8 +112,8 @@ int main()
 
 	(void)size_ipl_block_large;
 
-	Printf_CHS_ScreenInit();///|pspDebugScreenInit();
-	Printf_CHS_ScreenSetTextColor(WHITE);///|pspDebugScreenSetTextColor(WHITE);
+	CHS_ScreenInit();///|pspDebugScreenInit();
+	CHS_ScreenSetTextColor(WHITE);///|pspDebugScreenSetTextColor(WHITE);
 	devkit = sceKernelDevkitVersion();
 
 	if(devkit != DEVKIT_VER ) {
