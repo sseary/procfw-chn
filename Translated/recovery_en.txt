@@ -96,3 +96,4 @@ Russia
 China
 Debug Type I
 Debug Type II
+Unlock Memory in PSP Games (breaks Homescreen)

@@ -284,7 +284,7 @@ static void patch_sysconf_plugin_module(SceModule2 *mod)
 		sprintf(str+strlen(str), "%d", (uint)minor_version);
 	}
 
-	sprintf(str+strlen(str), ".3");///+
+	sprintf(str+strlen(str), ":4");///+
 
 #ifdef NIGHTLY
 	strcpy(str, "PRO NIGHTLY");
@@ -425,6 +425,9 @@ int umdLoadExec(char * file, struct SceKernelLoadExecVSHParam * param)
 		sctrlSESetBootConfFileIndex(config.umdmode);
 		sctrlSESetDiscType(PSP_UMD_TYPE_GAME);
 	}
+
+	//enable high memory on demand
+	if(config.retail_high_memory) sctrlHENSetMemory(55, 0);
 
 	if(psp_model == PSP_GO) {
 		char devicename[20];
