@@ -291,6 +291,8 @@ static void patch_sysconf_plugin_module(SceModule2 *mod)
 		sprintf(str+strlen(str), "%d", (uint)minor_version);
 	}
 
+	sprintf(str+strlen(str), ":1");///+
+
 #ifdef NIGHTLY
 	strcpy(str, "PRO NIGHTLY");
 #endif

@@ -52,7 +52,7 @@ const char ** g_messages = g_messages_en;
 
 static int display_fake_region(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[FAKE_REGION], get_fake_region_name(g_config.fakeregion));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[FAKE_REGION], get_fake_region_name(g_config.fakeregion));///|"%-48s %-11s"
 
 	return 0;
 }
@@ -219,21 +219,21 @@ static struct ValueOption g_hibblock_option = {
 
 static int display_iso_mode(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[ISO_MODE], get_iso_name(g_config.umdmode));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[ISO_MODE], get_iso_name(g_config.umdmode));
 
 	return 0;
 }
 
 static int display_xmb_usbdevice(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[XMB_USBDEVICE], get_usbdevice_name(g_config.usbdevice));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[XMB_USBDEVICE], get_usbdevice_name(g_config.usbdevice));
 
 	return 0;
 }
 
 static int display_usb_charge(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[USB_CHARGE], get_bool_name(g_config.usbcharge));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[USB_CHARGE], get_bool_name(g_config.usbcharge));
 
 	return 0;
 }
@@ -241,7 +241,7 @@ static int display_usb_charge(struct MenuEntry* entry, char *buf, int size)
 // No need to translate this function
 static int display_language(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", "Language", get_language_name(g_config.language));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", "Language", get_language_name(g_config.language));
 
 	return 0;
 }
@@ -277,7 +277,7 @@ static int display_recovery_font(struct MenuEntry* entry, char *buf, int size)
 		fontname = p + 1;
 	}
 
-	sprintf(buf, "%-48s %-11s", g_messages[RECOVERY_FONT], fontname);
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[RECOVERY_FONT], fontname);
 
 	return 0;
 }
@@ -329,77 +329,77 @@ static int change_font_select_option_by_enter(struct MenuEntry *entry)
 
 static int display_slim_color(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[SLIM_COLOR], get_bool_name(g_config.slimcolor));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[SLIM_COLOR], get_bool_name(g_config.slimcolor));
 
 	return 0;
 }
 
 static int display_htmlviewer_custom_save_location(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[HTMLVIEWER_CUSTOM_SAVE_LOCATION], get_bool_name(g_config.htmlviewer_custom_save_location));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[HTMLVIEWER_CUSTOM_SAVE_LOCATION], get_bool_name(g_config.htmlviewer_custom_save_location));
 
 	return 0;
 }
 
 static int display_hidden_mac(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[HIDE_MAC], get_bool_name(g_config.machidden));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[HIDE_MAC], get_bool_name(g_config.machidden));
 
 	return 0;
 }
 
 static int display_skip_logo(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[SKIP_SONY_LOGO], get_bool_name(g_config.skiplogo));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[SKIP_SONY_LOGO], get_bool_name(g_config.skiplogo));
 
 	return 0;
 }
 
 static int display_skip_gameboot(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[SKIP_GAME_BOOT], get_bool_name(g_config.skipgameboot));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[SKIP_GAME_BOOT], get_bool_name(g_config.skipgameboot));
 
 	return 0;
 }
 
 static int display_hide_pic(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[HIDE_PIC], get_bool_name(g_config.hidepic));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[HIDE_PIC], get_bool_name(g_config.hidepic));
 
 	return 0;
 }
 
 static int display_flash_protect(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[FLASH_PROTECT], get_bool_name(g_config.flashprot));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[FLASH_PROTECT], get_bool_name(g_config.flashprot));
 
 	return 0;
 }
 
 static int display_use_version(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[USE_VERSION_TXT], get_bool_name(g_config.useversion));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[USE_VERSION_TXT], get_bool_name(g_config.useversion));
 
 	return 0;
 }
 
 static int display_use_usbversion(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[USE_USBVERSION_TXT], get_bool_name(g_config.usbversion));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[USE_USBVERSION_TXT], get_bool_name(g_config.usbversion));
 
 	return 0;
 }
 
 static int display_use_ownupdate(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[USE_CUSTOM_UPDATE_SERVER], get_bool_name(g_config.useownupdate));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[USE_CUSTOM_UPDATE_SERVER], get_bool_name(g_config.useownupdate));
 
 	return 0;
 }
 
 static int display_hibernation_deletion(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[PREVENT_HIB_DEL], get_bool_name(g_config.hibblock));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[PREVENT_HIB_DEL], get_bool_name(g_config.hibblock));
 
 	return 0;
 }
@@ -434,77 +434,77 @@ static struct Menu g_configuration_menu = {
 
 static int display_xmb_plugin(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[XMB_PLUGIN], get_bool_name(g_config.plugvsh));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[XMB_PLUGIN], get_bool_name(g_config.plugvsh));
 
 	return 0;
 }
 
 static int display_game_plugin(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[GAME_PLUGIN], get_bool_name(g_config.pluggame));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[GAME_PLUGIN], get_bool_name(g_config.pluggame));
 
 	return 0;
 }
 
 static int display_pops_plugin(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[POPS_PLUGIN], get_bool_name(g_config.plugpop));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[POPS_PLUGIN], get_bool_name(g_config.plugpop));
 
 	return 0;
 }
 
 static int display_use_nodrm(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[USE_NODRM_ENGINE], get_bool_name(g_config.usenodrm));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[USE_NODRM_ENGINE], get_bool_name(g_config.usenodrm));
 
 	return 0;
 }
 
 static int display_use_noanalog(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[BLOCK_ANALOG_INPUT], get_bool_name(g_config.noanalog));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[BLOCK_ANALOG_INPUT], get_bool_name(g_config.noanalog));
 
 	return 0;
 }
 
 static int display_use_oldplugin(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[OLD_PLUGINS_SUPPORT], get_bool_name(g_config.oldplugin));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[OLD_PLUGINS_SUPPORT], get_bool_name(g_config.oldplugin));
 
 	return 0;
 }
 
 static int display_iso_cache(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[ISO_CACHE], get_bool_name(g_config.iso_cache));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[ISO_CACHE], get_bool_name(g_config.iso_cache));
 
 	return 0;
 }
 
 static int display_iso_cache_total_size(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11d", g_messages[ISO_CACHE_TOTAL_SIZE], g_config.iso_cache_total_size);
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11d" : "%-48s %-11d", g_messages[ISO_CACHE_TOTAL_SIZE], g_config.iso_cache_total_size);///|"%-48s %-11d"
 
 	return 0;
 }
 
 static int display_iso_cache_number(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11d", g_messages[ISO_CACHE_NUMBER], g_config.iso_cache_num);
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11d" : "%-48s %-11d", g_messages[ISO_CACHE_NUMBER], g_config.iso_cache_num);
 
 	return 0;
 }
 
 static int display_iso_cache_policy(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[ISO_CACHE_POLICY], get_cache_policy_name(g_config.iso_cache_policy));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[ISO_CACHE_POLICY], get_cache_policy_name(g_config.iso_cache_policy));
 
 	return 0;
 }
 
 static int display_chn_iso(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[ALLOW_NON_LATIN1_ISO_FILENAME], get_bool_name(g_config.chn_iso));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[ALLOW_NON_LATIN1_ISO_FILENAME], get_bool_name(g_config.chn_iso));
 
 	return 0;
 }
@@ -531,21 +531,21 @@ static int display_msspeed(struct MenuEntry* entry, char *buf, int size)
 		sprintf(speedstr, g_messages[ALWAYS]);
 	}
 
-	sprintf(buf, "%-48s %-11s", g_messages[MSSPEED_UP], speedstr);
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[MSSPEED_UP], speedstr);
 
 	return 0;
 }
 
 static int display_hide_cfw_dirs(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[HIDE_CFW_DIRS], get_bool_name(g_config.hide_cfw_dirs));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[HIDE_CFW_DIRS], get_bool_name(g_config.hide_cfw_dirs));
 
 	return 0;
 }
 
 static int display_retail_high_memory(struct MenuEntry* entry, char *buf, int size)
 {
-	sprintf(buf, "%-48s %-11s", g_messages[RETAIL_HIGH_MEMORY], get_bool_name(g_config.retail_high_memory));
+	sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-56s %-11s" : "%-48s %-11s", g_messages[RETAIL_HIGH_MEMORY], get_bool_name(g_config.retail_high_memory));
 
 	return 0;
 }
@@ -766,9 +766,9 @@ static int display_xmb(struct MenuEntry* entry, char *buf, int size)
 	sprintf(buf, "%s:", g_messages[XMB_CPU_BUS]);
 
 	if(cpu == 0 || bus == 0) {
-		sprintf(buf, "%-40s %s/%s", buf, g_messages[DEFAULT], g_messages[DEFAULT]);
+		sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-48s %s/%s" : "%-40s %s/%s", buf, g_messages[DEFAULT], g_messages[DEFAULT]);///|"%-40s %s/%s"
 	} else {
-		sprintf(buf, "%-40s %d/%d", buf, cpu, bus);
+		sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-48s %d/%d" : "%-40s %d/%d", buf, cpu, bus);///|"%-40s %d/%d"
 	}
 
 	return 0;
@@ -784,9 +784,9 @@ static int display_game(struct MenuEntry* entry, char *buf, int size)
 	sprintf(buf, "%s:", g_messages[GAME_CPU_BUS]);
 
 	if(cpu == 0 || bus == 0) {
-		sprintf(buf, "%-40s %s/%s", buf, g_messages[DEFAULT], g_messages[DEFAULT]);
+		sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-48s %s/%s" : "%-40s %s/%s", buf, g_messages[DEFAULT], g_messages[DEFAULT]);
 	} else {
-		sprintf(buf, "%-40s %d/%d", buf, cpu, bus);
+		sprintf(buf, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? "%-48s %d/%d" : "%-40s %d/%d", buf, cpu, bus);
 	}
 
 	return 0;
@@ -1038,9 +1038,11 @@ static void select_language(void)
 			break;
 		case PSP_SYSTEMPARAM_LANGUAGE_CHINESE_TRADITIONAL:
 			g_messages = (const char**)apply_language("recovery_cht.txt");
+			if(g_messages == g_messages_en) g_messages = g_messages_cht;///+
 			break;
 		case PSP_SYSTEMPARAM_LANGUAGE_CHINESE_SIMPLIFIED:
 			g_messages = (const char**)apply_language("recovery_chs.txt");
+			if(g_messages == g_messages_en) g_messages = g_messages_chs;///+
 			break;
 		default:
 			g_messages = g_messages_en;

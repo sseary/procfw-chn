@@ -68,6 +68,8 @@ static int menu_sel = TMENU_XMB_CLOCK;
 
 const int xyPoint[] ={0x98, 0x30, 0xC0, 0xA0, 0x70, 0x08, 0x0E, 0xA8};//data243C=
 const int xyPoint2[] ={0xB0, 0x30, 0xD8, 0xB8, 0x88, 0x08, 0x11, 0xC0};//data2458=
+const int xyPoint3[] ={0xB0, 0x30, 0xC2, 0xB6, 0x92, 0x06, 0x0B, 0xB6};//data243C= ///+
+const int xyPoint4[] ={0xC8, 0x30, 0xDA, 0xCE, 0xAA, 0x06, 0x0E, 0xCE};//data2458= ///+
 
 int menu_draw(void)
 {
@@ -76,19 +78,25 @@ int menu_draw(void)
 	int max_menu, cur_menu;
 	const int *pointer;
 	int xPointer;
-	
+
 	// check & setup video mode
 	if( blit_setup() < 0) return -1;
 
 	if(pwidth==720) {
-		pointer = xyPoint;
+		pointer = ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? xyPoint3 : xyPoint;///|pointer = xyPoint;
 	} else {
-		pointer = xyPoint2;
+		pointer = ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? xyPoint4 : xyPoint2;///|pointer = xyPoint2;
 	}
 
 	// show menu list
 	blit_set_color(0xffffff,0x8000ff00);
-	blit_string(pointer[0], pointer[1], g_messages[MSG_PRO_VSH_MENU]);
+	if(g_messages == g_messages_chs) {///|blit_string(pointer[0], pointer[1], g_messages[MSG_PRO_VSH_MENU]);
+		blit_string_chn(1, pointer[0], pointer[1], g_messages[MSG_PRO_VSH_MENU]);
+	} else if(g_messages == g_messages_cht) {
+		blit_string_chn(2, pointer[0], pointer[1], g_messages[MSG_PRO_VSH_MENU]);
+	} else {
+		blit_string(pointer[0], pointer[1], g_messages[MSG_PRO_VSH_MENU]);
+	}
 
 	for(max_menu=0;max_menu<TMENU_MAX;max_menu++) {
 		fc = 0xffffff;
@@ -119,13 +127,13 @@ int menu_draw(void)
 					
 					break;
 				case TMENU_RECOVERY_MENU:
-					xPointer = 168;
+					xPointer = ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? 194 : 168; ///|xPointer = 168;
 					break;
 				case TMENU_SHUTDOWN_DEVICE:
-					xPointer = 176;
+					xPointer = ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? 206 : 176; ///|xPointer = 176;
 					break;
 				case TMENU_SUSPEND_DEVICE:
-					xPointer = 176;
+					xPointer = ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? 206 : 176;///|xPointer = 176;
 					break;
 				default:
 					xPointer=pointer[4];
@@ -133,12 +141,24 @@ int menu_draw(void)
 			}
 
 			cur_menu = max_menu;
-			blit_string(xPointer, (pointer[5] + cur_menu)*8, msg);
+			if(g_messages == g_messages_chs) {///|blit_string(xPointer, (pointer[5] + cur_menu)*8, msg);
+				blit_string_chn(1, xPointer, (pointer[5] + cur_menu)*12, msg);
+			} else if(g_messages == g_messages_cht) {
+				blit_string_chn(2, xPointer, (pointer[5] + cur_menu)*12, msg);
+			} else {
+				blit_string(xPointer, (pointer[5] + cur_menu)*8, msg);
+			}
 			msg = item_str[max_menu];
 
 			if(msg) {
 				blit_set_color(item_fcolor[max_menu],bc);
-				blit_string( (pointer[6] * 8) + 128, (pointer[5] + cur_menu)*8, msg);
+				if(g_messages == g_messages_chs) {///|blit_string( (pointer[6] * 8) + 128, (pointer[5] + cur_menu)*8, msg);
+					blit_string_chn(1, (pointer[6] * 6) + 176, (pointer[5] + cur_menu)*12, msg);
+				} else if(g_messages == g_messages_cht) {
+					blit_string_chn(2, (pointer[6] * 6) + 176, (pointer[5] + cur_menu)*12, msg);
+				} else {
+					blit_string( (pointer[6] * 8) + 128, (pointer[5] + cur_menu)*8, msg);
+				}
 			}
 		}
 	}

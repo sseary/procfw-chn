@@ -20,6 +20,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include "prodebug.h"
+#include "font_chn.c"///+
 
 #define PSP_SCREEN_WIDTH 480
 #define PSP_SCREEN_HEIGHT 272
@@ -192,9 +193,19 @@ void proDebugScreenSetMaxX(unsigned int maxx)
        MX = maxx;
 }
 
+void proDebugScreenSetMaxX_chn(unsigned int maxx)///+
+{
+       MX = maxx+12;
+}
+
 void proDebugScreenSetMaxY(unsigned int maxy)
 {
        MY = maxy;
+}
+
+void proDebugScreenSetMaxY_chn(unsigned int maxy)///+
+{
+       MY = maxy-12;
 }
 
 int proDebugScreenGetX()
@@ -229,6 +240,12 @@ void proDebugScreenSetXY(int x, int y)
 {
 	if( x<MX && x>=0 ) X=x;
 	if( y<MY && y>=0 ) Y=y;
+}
+
+void proDebugScreenSetXY_chn(int x, int y)///+
+{
+	if( x<MX+12 && x>=0 ) X=x;
+	if( y<MY-12 && y>=0 ) Y=y;
 }
 
 void proDebugScreenSetOffset(int offset)
@@ -428,7 +445,234 @@ void proDebugScreenPrintf(const char *format, ...)
    
    va_start(opt, format);
    bufsz = vsnprintf( buff, (size_t) sizeof(buff), format, opt);
+   va_end(opt);
    (void) proDebugScreenPrintData(buff, bufsz);
+}
+
+static void PutPixel(int x, int y, u32 color)///+
+{
+	u32 *vram_ptr;
+
+	vram_ptr = g_vram_base;
+	if(g_vram_mode == PSP_DISPLAY_PIXEL_FORMAT_8888)
+	{
+		vram_ptr += (g_vram_offset >> 2) + x;
+	}
+	else
+	{
+		u16 c = 0;
+		u16 b = 0;
+		switch(g_vram_mode)
+		{
+			case PSP_DISPLAY_PIXEL_FORMAT_565: c = convert_8888_to_565(color);
+				b = convert_8888_to_565(bg_col);
+				break;
+			case PSP_DISPLAY_PIXEL_FORMAT_5551: c = convert_8888_to_5551(color);
+				b = convert_8888_to_5551(bg_col);
+				break;
+			case PSP_DISPLAY_PIXEL_FORMAT_4444: c = convert_8888_to_4444(color);
+				b = convert_8888_to_4444(bg_col);
+				break;
+		};
+		vram_ptr += (g_vram_offset >> 1) + x;
+	}
+	vram_ptr += (y * PSP_LINE_SIZE);
+
+	*vram_ptr = color;
+}
+
+void proDebugScreenPutChar_chn(int mode, int x, int y, u32 color, u8 ch1, u8 ch2)///+
+{
+	int i,j,font_offset;
+	u8 *font;
+
+	if(!init)
+	{
+		return;
+	}
+
+	if((int)ch1 < 128)
+	{
+		font = &msx_asc[ (int)ch1 * 12 ];
+		for (i=0; i < 12; i++, font++)
+		{
+			for (j=0; j < 6; j++)
+			{
+				if ((*font & (128 >> j)))
+					PutPixel(x+j, y+i, color);
+				else if(bg_enable)
+					PutPixel(x+j, y+i, bg_col);
+			}
+		}
+	}
+	else
+	{
+		if(mode == 2)
+		{
+			if( ((int)ch1 >= 0xA1) && ((int)ch1 <= 0xF9) && ((int)ch2 >= 0x40) && ((int)ch2 <= 0x7E) )
+				font_offset = 24 + ((157*((int)ch1-0XA1)+((int)ch2-0x40))*24);
+			else if( ((int)ch1 >= 0xA1) && ((int)ch1 <= 0xF9) && ((int)ch2 >= 0xA1) && ((int)ch2 <= 0xFE) )
+				font_offset = 24 + ((157*((int)ch1-0XA1)+((int)ch2-0xA1+63))*24);
+			else
+				font_offset = 0;
+
+			if(font_offset+24 > sizeof(msx_cht))
+				font_offset = 0;
+
+			font = &msx_cht[ font_offset ];
+		}
+		else
+		{
+			if( ((int)ch1 >= 0xA1) && ((int)ch1 <= 0xFE) && ((int)ch2 >= 0xA1) && ((int)ch2 <= 0xFE) )
+				font_offset = 24 + ((94*((int)ch1-0xA1)+((int)ch2-0xA1))*24);
+			else
+				font_offset = 0;
+
+			if(font_offset+24 > sizeof(msx_chs))
+				font_offset = 0;
+
+			font = &msx_chs[ font_offset ];
+		}
+
+		for (i=0; i < 12; i++, font+=2)
+		{
+			for (j=0; j < 12; j++)
+			{
+				if (j < 8)
+				{
+					if ((*font & (128 >> j)))
+						PutPixel(x+j, y+i, color);
+					else if(bg_enable)
+						PutPixel(x+j, y+i, bg_col);
+				}
+				else
+				{
+					if ((*(font+1) & (128 >> (j-8))))
+						PutPixel(x+j, y+i, color);
+					else if(bg_enable)
+						PutPixel(x+j, y+i, bg_col);
+				}
+			}
+		}
+	}
+}
+
+void  _proDebugScreenClearLine_chn(int mode, int Y)///+
+{
+	if(clearline_en)
+	{
+		int i;
+		if(bg_enable)
+		{
+			for (i=0; i < MX+12; i++)
+			{
+				proDebugScreenPutChar_chn(mode, i*6 , Y * 12, bg_col, ' ', 0);
+			}
+		}
+	}
+	return;
+}
+
+void proDebugScreenClear_chn(int mode)///+
+{
+	int y;
+
+	if(!init)
+	{
+		return;
+	}
+
+	for(y=0;y<MY-12;y++)
+	{
+		_proDebugScreenClearLine_chn(mode, y);
+	}
+
+	proDebugScreenSetXY_chn(0,0);
+	clear_screen(bg_col);
+}
+
+int proDebugScreenPrintData_chn(int mode, const char *buff, int size)///+
+{
+	int i,j;
+	unsigned char c[2];
+
+	if(!init)
+	{
+		return 0;
+	}
+
+	i = 0;
+	while (i < size)
+	{
+		c[0] = buff[i];
+		if (c[0] < 128)
+		{
+			c[1] = 0;
+			i++;
+
+			switch (c[0])
+			{
+				case '\r':
+					X = 0;
+					break;
+				case '\n':
+					X = 0;
+					Y ++;
+					if (Y >= MY-12)
+						Y = 0;
+					_proDebugScreenClearLine_chn(mode, Y);
+					break;
+				case '\t':
+					for (j = 0; j < 5 && X < MX+12; j++)
+					{
+						proDebugScreenPutChar_chn(mode, X*6 , Y * 12, fg_col, ' ', 0);
+						X++;
+					}
+					break;
+				default:
+					if (X+1 > MX+12)
+					{
+						X = 0;
+						Y++;
+						if (Y >= MY-12)
+							Y = 0;
+						_proDebugScreenClearLine_chn(mode, Y);
+					}
+					proDebugScreenPutChar_chn(mode, X*6 , Y * 12, fg_col, c[0], c[1]);
+					X++;
+			}
+		}
+		else
+		{
+			c[1] = buff[i+1];
+			i+=2;
+
+			if (X+2 > MX+12)
+			{
+				X = 0;
+				Y++;
+				if (Y >= MY-12)
+					Y = 0;
+				_proDebugScreenClearLine_chn(mode, Y);
+			}
+			proDebugScreenPutChar_chn(mode, X*6 , Y * 12, fg_col, c[0], c[1]);
+			X+=2;
+		}
+	}
+
+	return i;
+}
+
+void proDebugScreenPrintf_chn(int mode, const char *format, ...)///+
+{
+   va_list	opt;
+   char     buff[2048];
+   int		bufsz;
+   
+   va_start(opt, format);
+   bufsz = vsnprintf( buff, (size_t) sizeof(buff), format, opt);
+   va_end(opt);
+   (void) proDebugScreenPrintData_chn(mode, buff, bufsz);
 }
 
 #if 0

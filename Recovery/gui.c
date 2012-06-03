@@ -34,13 +34,13 @@
 #include "prodebug.h"
 #include "main.h"
 
-static char g_bottom_info[MAX_SCREEN_X+1];
+static char g_bottom_info[MAX_SCREEN_X+1+12];///|static char g_bottom_info[MAX_SCREEN_X+1];
 static int g_bottom_info_color;
 static int g_frame_count = 0;
 
 static void set_screen_xy(int x, int y)
 {
-	proDebugScreenSetXY(x, y);
+	((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? proDebugScreenSetXY_chn(x, y) : proDebugScreenSetXY(x, y);///|proDebugScreenSetXY(x, y);
 }
 
 static void write_string_with_color(const char *str, int color)
@@ -49,23 +49,32 @@ static void write_string_with_color(const char *str, int color)
 		proDebugScreenSetTextColor(color);
 	}
 	
-	printf(str);
+	if(g_messages == g_messages_chs) {///|printf(str);
+		proDebugScreenPrintf_chn(1, str);
+	} else if(g_messages == g_messages_cht) {
+		proDebugScreenPrintf_chn(2, str);
+	} else {
+		printf(str);
+	}
 	proDebugScreenSetTextColor(0xFFFFFFFF);
 }
 
 static void write_bottom_info(void)
 {
-	set_screen_xy(2, MAX_SCREEN_Y-3);
+	int NEW_MAX_SCREEN_Y = ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? (MAX_SCREEN_Y-11) : (MAX_SCREEN_Y);///+
+	set_screen_xy(2, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? (NEW_MAX_SCREEN_Y-2) : (NEW_MAX_SCREEN_Y-3));///|set_screen_xy(2, MAX_SCREEN_Y-3);
 	write_string_with_color(g_bottom_info, g_bottom_info_color);
 }
 
 static void draw_bottom_line(void)
 {
 	int i;
+	int NEW_MAX_SCREEN_X = ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? (MAX_SCREEN_X+12) : (MAX_SCREEN_X);///+
+	int NEW_MAX_SCREEN_Y = ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? (MAX_SCREEN_Y-11) : (MAX_SCREEN_Y);///+
 
-	set_screen_xy(0, MAX_SCREEN_Y-5);
+	set_screen_xy(0, ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? (NEW_MAX_SCREEN_Y-4) : (NEW_MAX_SCREEN_Y-5));///|set_screen_xy(0, MAX_SCREEN_Y-5);
 
-	for(i=0; i<MAX_SCREEN_X; ++i) {
+	for(i=0; i<NEW_MAX_SCREEN_X; ++i) {///|for(i=0; i<MAX_SCREEN_X; ++i) {
 		write_string_with_color("*", 0xFF);
 	}
 }
@@ -73,17 +82,24 @@ static void draw_bottom_line(void)
 static void set_line_backcolor(int x, int y, int color)
 {
 	int i;
+	int NEW_MAX_SCREEN_X = ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? (MAX_SCREEN_X+12) : (MAX_SCREEN_X);///+
 
 	proDebugScreenSetBackColor(color);
-	proDebugScreenSetXY(0, y);
+	((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? proDebugScreenSetXY_chn(0, y) : proDebugScreenSetXY(0, y);///|proDebugScreenSetXY(0, y);
 	proDebugScreenEnableBackColor(1);
 
-	for(i=0; i<MAX_SCREEN_X; ++i) {
-		proDebugScreenPrintf(" ");
+	for(i=0; i<NEW_MAX_SCREEN_X; ++i) {///|for(i=0; i<MAX_SCREEN_X; ++i) {
+		if(g_messages == g_messages_chs) {///|proDebugScreenPrintf(" ");
+			proDebugScreenPrintf_chn(1, " ");
+		} else if(g_messages == g_messages_cht) {
+			proDebugScreenPrintf_chn(2, " ");
+		} else {
+			proDebugScreenPrintf(" ");
+		}
 	}
 
 	proDebugScreenEnableBackColor(0);
-	proDebugScreenSetXY(x, y);
+	((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? proDebugScreenSetXY_chn(x, y) : proDebugScreenSetXY(x, y);///|proDebugScreenSetXY(x, y);
 }
 
 static int get_back_color(int frame_count)
@@ -106,6 +122,8 @@ static int get_back_color(int frame_count)
 static void menu_draw(struct Menu *menu)
 {
 	int x, y, i, cur_page_start, total_page;
+	int NEW_MAX_SCREEN_X = ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? (MAX_SCREEN_X+12) : (MAX_SCREEN_X);///+
+	int NEW_MAX_MENU_NUMBER_PER_PAGE = ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? (MAX_MENU_NUMBER_PER_PAGE-10) : (MAX_MENU_NUMBER_PER_PAGE);///+
 
 	x = 1, y = 1;
 	set_screen_xy(x, y);
@@ -139,10 +157,10 @@ static void menu_draw(struct Menu *menu)
 	if(menu->cur_sel == 0) {
 		cur_page_start = 0;
 	} else {
-		cur_page_start = (menu->cur_sel-1) / MAX_MENU_NUMBER_PER_PAGE * MAX_MENU_NUMBER_PER_PAGE;
+		cur_page_start = (menu->cur_sel-1) / NEW_MAX_MENU_NUMBER_PER_PAGE * NEW_MAX_MENU_NUMBER_PER_PAGE;///|cur_page_start = (menu->cur_sel-1) / MAX_MENU_NUMBER_PER_PAGE * MAX_MENU_NUMBER_PER_PAGE;
 	}
 
-	for(i=cur_page_start; i<MIN(menu->submenu_size, cur_page_start+MAX_MENU_NUMBER_PER_PAGE); ++i) {
+	for(i=cur_page_start; i<MIN(menu->submenu_size, cur_page_start+NEW_MAX_MENU_NUMBER_PER_PAGE); ++i) {///|for(i=cur_page_start; i<MIN(menu->submenu_size, cur_page_start+NEW_MAX_MENU_NUMBER_PER_PAGE); ++i) {
 		char buf[256], *p;
 		int color;
 		struct MenuEntry* entry;
@@ -181,14 +199,14 @@ static void menu_draw(struct Menu *menu)
 		set_screen_xy(x, ++y);
 	}
 
-	total_page = (menu->submenu_size+MAX_MENU_NUMBER_PER_PAGE-1) / MAX_MENU_NUMBER_PER_PAGE;
+	total_page = (menu->submenu_size+NEW_MAX_MENU_NUMBER_PER_PAGE-1) / NEW_MAX_MENU_NUMBER_PER_PAGE;///|total_page = (menu->submenu_size+MAX_MENU_NUMBER_PER_PAGE-1) / MAX_MENU_NUMBER_PER_PAGE;
 
 	if(total_page > 1) {
 		char buf[20];
-		x = MAX_SCREEN_X - 15;
+		x = ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? (NEW_MAX_SCREEN_X - 20) : (NEW_MAX_SCREEN_X - 15);///|x = MAX_SCREEN_X - 15;
 		y = 4;
 
-		sprintf(buf, "%s %d/%d", g_messages[PAGE], (cur_page_start/MAX_MENU_NUMBER_PER_PAGE)+1, total_page);
+		sprintf(buf, "%s %d/%d", g_messages[PAGE], (cur_page_start/NEW_MAX_MENU_NUMBER_PER_PAGE)+1, total_page);///|sprintf(buf, "%s %d/%d", g_messages[PAGE], (cur_page_start/MAX_MENU_NUMBER_PER_PAGE)+1, total_page);
 		set_screen_xy(x, y);
 		write_string_with_color(buf, 0);
 	}
@@ -223,6 +241,7 @@ static int menu_ctrl(struct Menu *menu)
 {
 	u32 key;
 	char buf[80];
+	int NEW_MAX_MENU_NUMBER_PER_PAGE = ((g_messages == g_messages_chs) || (g_messages == g_messages_cht)) ? (MAX_MENU_NUMBER_PER_PAGE-10) : (MAX_MENU_NUMBER_PER_PAGE);///+
 
 	key = ctrl_read();
 
@@ -235,14 +254,14 @@ static int menu_ctrl(struct Menu *menu)
 	} else if(key & PSP_CTRL_LEFT) {
 		menu_change_value(menu, -1);
 	} else if(key & PSP_CTRL_LTRIGGER) {
-		if(menu->cur_sel > MAX_MENU_NUMBER_PER_PAGE) {
-			menu->cur_sel -= MAX_MENU_NUMBER_PER_PAGE;
+		if(menu->cur_sel > NEW_MAX_MENU_NUMBER_PER_PAGE) {///|if(menu->cur_sel > MAX_MENU_NUMBER_PER_PAGE) {
+			menu->cur_sel -= NEW_MAX_MENU_NUMBER_PER_PAGE;///|menu->cur_sel -= MAX_MENU_NUMBER_PER_PAGE;
 		} else {
 			menu->cur_sel = 0;
 		}
 	} else if(key & PSP_CTRL_RTRIGGER) {
-		if(menu->cur_sel + MAX_MENU_NUMBER_PER_PAGE < menu->submenu_size) {
-			menu->cur_sel += MAX_MENU_NUMBER_PER_PAGE;
+		if(menu->cur_sel + NEW_MAX_MENU_NUMBER_PER_PAGE < menu->submenu_size) {///|if(menu->cur_sel + MAX_MENU_NUMBER_PER_PAGE < menu->submenu_size) {
+			menu->cur_sel += NEW_MAX_MENU_NUMBER_PER_PAGE;///|menu->cur_sel += MAX_MENU_NUMBER_PER_PAGE;
 		} else {
 			menu->cur_sel = menu->submenu_size;
 		}

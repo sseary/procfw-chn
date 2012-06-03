@@ -19,6 +19,7 @@
 	PSP VSH 24bpp text bliter
 */
 #include "common.h"
+#include "font_chn.c"///+
 
 //#define ALPHA_BLEND 1
 
@@ -126,6 +127,113 @@ int blit_string(int sx,int sy,const char *msg)
 				font <<= 1;
 				offset++;
 			}
+		}
+	}
+	return x;
+}
+
+int blit_string_chn(int mode, int sx,int sy,const char *msg)///+
+{
+	int x,y,p;
+	int offset,font_offset;
+	u8 code1,code2;
+	u8 *font;
+	u32 fg_col,bg_col;
+
+	u32 col,c1,c2;
+	u32 alpha;
+
+	fg_col = adjust_alpha(fcolor);
+	bg_col = adjust_alpha(bcolor);
+
+	if( (bufferwidth==0) || (pixelformat!=3)) 
+	{
+		return -1;
+	}
+
+	x = 0;
+	while (msg[x] && x<(pwidth/8))
+	{
+		code1 = msg[x];
+		if (code1 < 128)
+		{
+			code2 = 0;
+			font = &msx_asc[ code1 * 12 ];
+			for(y=0;y<12;y++,font++)
+			{
+				for(p=0;p<6;p++)
+				{
+					col = (*font & (128 >> p)) ? fg_col : bg_col;
+					alpha = col>>24;
+					offset = (sy+y)*bufferwidth + sx+x*6+p;
+					if(alpha==0) vram32[offset] = col;
+					else if(alpha!=0xff)
+					{
+						c2 = vram32[offset];
+						c1 = c2 & 0x00ff00ff;
+						c2 = c2 & 0x0000ff00;
+						c1 = ((c1*alpha)>>8)&0x00ff00ff;
+						c2 = ((c2*alpha)>>8)&0x0000ff00;
+						vram32[offset] = (col&0xffffff) + c1 + c2;
+					}
+				}
+			}
+			x++;
+		}
+		else
+		{
+			code2 = msg[x+1];
+
+			if(mode == 2)
+			{
+				if( (code1 >= 0XA1) && (code1 <= 0XF9) && (code2 >= 0x40) && (code2 <= 0x7E) )
+					font_offset = 24 + ((157*(code1-0XA1)+(code2-0x40))*24);
+				else if( (code1 >= 0XA1) && (code1 <= 0XF9) && (code2 >= 0xA1) && (code2 <= 0xFE) )
+					font_offset = 24 + ((157*(code1-0XA1)+(code2-0xA1+63))*24);
+				else
+					font_offset = 0;
+
+				if(font_offset+24 > sizeof(msx_cht))
+					font_offset = 0;
+
+				font = &msx_cht[ font_offset ];
+			}
+			else
+			{
+				if( (code1 >= 0xA1) && (code1 <= 0xFE) && (code2 >= 0xA1) && (code2 <= 0xFE) )
+					font_offset = 24 + ((94*(code1-0xA1)+(code2-0xA1))*24);
+				else
+					font_offset = 0;
+
+				if(font_offset+24 > sizeof(msx_chs))
+					font_offset = 0;
+
+				font = &msx_chs[ font_offset ];
+			}
+
+			for(y=0;y<12;y++,font+=2)
+			{
+				for(p=0;p<12;p++)
+				{
+					if (p < 8)
+						col = (*font & (128 >> p)) ? fg_col : bg_col;
+					else
+						col = (*(font+1) & (128 >> (p-8))) ? fg_col : bg_col;
+					alpha = col>>24;
+					offset = (sy+y)*bufferwidth + sx+x*6+p;
+					if(alpha==0) vram32[offset] = col;
+					else if(alpha!=0xff)
+					{
+						c2 = vram32[offset];
+						c1 = c2 & 0x00ff00ff;
+						c2 = c2 & 0x0000ff00;
+						c1 = ((c1*alpha)>>8)&0x00ff00ff;
+						c2 = ((c2*alpha)>>8)&0x0000ff00;
+						vram32[offset] = (col&0xffffff) + c1 + c2;
+					}
+				}
+			}
+			x+=2;
 		}
 	}
 	return x;
