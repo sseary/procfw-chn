@@ -84,12 +84,12 @@ void flash_ipl(int size)
 //		ErrorExit(5000,"Failed to load custom ipl!\n");
 
 	if(pspIplUpdateClearIpl() < 0)
-		ErrorExit(5000,"\241\311\241\265\241\301\241\256 ipl\241\242\n");///|ErrorExit(5000,"Failed to clear ipl!\n");
+		ErrorExit(5000,"无法清除 ipl！\n");///|ErrorExit(5000,"Failed to clear ipl!\n");
 
 	if (pspIplUpdateSetIpl( ipl_block_large , size + 0x4000 ) < 0)
-		ErrorExit(5000,"\241\311\241\265\241\315\241\303 ipl\241\242\n");///|ErrorExit(5000,"Failed to write ipl!\n");
+		ErrorExit(5000,"无法写入 ipl！\n");///|ErrorExit(5000,"Failed to write ipl!\n");
 
-	printf("\241\306\241\253\241\241\n");///|printf("Done.\n");
+	printf("完成。\n");///|printf("Done.\n");
 
 }
 
@@ -120,19 +120,19 @@ int main()
 	devkit = sceKernelDevkitVersion();
 
 	if(devkit != DEVKIT_VER ) {
-		ErrorExit(5000,"FW\241\260\241\312\241\242\n");///|ErrorExit(5000,"FW ERROR!\n");
+		ErrorExit(5000,"FW错误！\n");///|ErrorExit(5000,"FW ERROR!\n");
 	}
 
 	kpspident = pspSdkLoadStartModule("kpspident.prx", PSP_MEMORY_PARTITION_KERNEL);
 
 	if (kpspident < 0) {
-		ErrorExit(5000, "kpspident.prx \241\272\241\323\241\304\241\250\n");///|ErrorExit(5000, "kpspident.prx loaded failed\n");
+		ErrorExit(5000, "kpspident.prx 加载失败\n");///|ErrorExit(5000, "kpspident.prx loaded failed\n");
 	}
 
 	model = kuKernelGetModel();
 
 	if(!(model == 0 || model == 1) || is_ta88v3()) {
-		ErrorExit(5000,"\241\257\241\246\241\327\241\254\241\317\241\251\241\324\241\255\241\257\241\276\241\305\241\241\n");///|ErrorExit(5000,"This installer does not support this model.\n");
+		ErrorExit(5000,"此安装程序不支持此模式。\n");///|ErrorExit(5000,"This installer does not support this model.\n");
 	}
 
 	if( model == 0 ) {
@@ -143,51 +143,51 @@ int main()
 	mod = sceKernelLoadModule("ipl_update.prx", 0, NULL);
 
 	if (mod < 0) {
-		ErrorExit(5000,"\241\311\241\265\241\272\241\323ipl_update.prx\241\242\n");///|ErrorExit(5000,"Could not load ipl_update.prx!\n");
+		ErrorExit(5000,"无法加载ipl_update.prx！\n");///|ErrorExit(5000,"Could not load ipl_update.prx!\n");
 	}
 
 	mod = sceKernelStartModule(mod, 0, NULL, NULL, NULL);
 
 	if (mod < 0) {
-		ErrorExit(5000,"\241\311\241\265\241\300\241\264\241\276\241\274\241\242\n");///|ErrorExit(5000,"Could not start module!\n");
+		ErrorExit(5000,"无法启动模块！\n");///|ErrorExit(5000,"Could not start module!\n");
 	}
 
 	size = pspIplUpdateGetIpl(orig_ipl);
 
 	if(size < 0) {
-		ErrorExit(5000,"\241\311\241\265\241\271\241\262 ipl\241\242\n");///|ErrorExit(5000,"Failed to get ipl!\n");
+		ErrorExit(5000,"无法获得 ipl！\n");///|ErrorExit(5000,"Failed to get ipl!\n");
 	}
 
-	printf("\n\241\330\241\263\241\320ipl Flasher \241\307"VERSION_STR"\241\241\n\n\n");///|printf("\nCustom ipl Flasher for "VERSION_STR".\n\n\n");
+	printf("\n自定义ipl Flasher 为"VERSION_STR"。\n\n\n");///|printf("\nCustom ipl Flasher for "VERSION_STR".\n\n\n");
 
 	int ipl_type = 0;
 
 	if( size == 0x24000 ) {
-		printf("\241\246\241\327\241\330\241\263\241\320ipl\n");///|printf("Custom ipl is installed\n");
+		printf("安装自定义ipl\n");///|printf("Custom ipl is installed\n");
 		size -= 0x4000;
 		memmove( ipl_block_large + 0x4000 , orig_ipl + 0x4000 , size);
 		ipl_type = 1;
 	} else if( size == 0x20000 ) {
-		printf("\241\322ipl \n");///|printf("Raw ipl \n");
+		printf("原ipl \n");///|printf("Raw ipl \n");
 		memmove( ipl_block_large + 0x4000, orig_ipl, size);
 	} else {
-		printf("ipl \241\261\241\314;%08X\n", size);///|printf("ipl size;%08X\n", size);
-		ErrorExit(5000,"\241\310\241\325 ipl\241\242\n");///|ErrorExit(5000,"Unknown ipl!\n");
+		printf("ipl 大小;%08X\n", size);///|printf("ipl size;%08X\n", size);
+		ErrorExit(5000,"未知 ipl！\n");///|ErrorExit(5000,"Unknown ipl!\n");
 	}
 
-	printf(" \241\247\241\245\241\273");///|printf(" Press X to ");
+	printf(" 按Ｘ键");///|printf(" Press X to ");
 
 	if( ipl_type ) {
-		printf("\241\326\241\316");///|printf("Re");
+		printf("重新");///|printf("Re");
 	}
 
-	printf("\241\246\241\327CIPL\n");///|printf("install CIPL\n");
+	printf("安装CIPL\n");///|printf("install CIPL\n");
 
 	if( ipl_type ) {
-		printf(" \241\247\241\243\241\273\241\252\241\256CIPL\241\266\241\270\241\322\241\322IPL\n");///|printf(" Press O to Erase CIPL and Restore Raw IPL\n");
+		printf(" 按Ｏ键擦除CIPL和还原原IPL\n");///|printf(" Press O to Erase CIPL and Restore Raw IPL\n");
 	}
 
-	printf(" \241\247\241\244\241\273\241\302\241\313\n\n");///|printf(" Press R to cancel\n\n");
+	printf(" 按Ｒ键取消\n\n");///|printf(" Press R to cancel\n\n");
     
 	while (1) {
         SceCtrlData pad;
@@ -200,23 +200,23 @@ int main()
 			printf("Flashing IPL...");
 
 			if(pspIplUpdateClearIpl() < 0) {
-				ErrorExit(5000,"\241\311\241\265\241\301\241\256 ipl\241\242\n");///|ErrorExit(5000,"Failed to clear ipl!\n");
+				ErrorExit(5000,"无法清除 ipl！\n");///|ErrorExit(5000,"Failed to clear ipl!\n");
 			}
 
 			if (pspIplUpdateSetIpl( ipl_block_large + 0x4000 , size ) < 0) {
-				ErrorExit(5000,"\241\311\241\265\241\315\241\303 ipl\241\242\n");///|ErrorExit(5000,"Failed to write ipl!\n");
+				ErrorExit(5000,"无法写入 ipl！\n");///|ErrorExit(5000,"Failed to write ipl!\n");
 			}
 
-			printf("\241\306\241\253\241\241\n");///|printf("Done.\n");
+			printf("完成。\n");///|printf("Done.\n");
 			break; 
 		} else if (pad.Buttons & PSP_CTRL_RTRIGGER) {
-			ErrorExit(2000,"\241\321\241\267\241\302\241\313\241\241\n");///|ErrorExit(2000,"Cancelled by user.\n");
+			ErrorExit(2000,"用户取消。\n");///|ErrorExit(2000,"Cancelled by user.\n");
 		}
 
 		sceKernelDelayThread(10000);
 	}
 
-	ErrorExit(5000,"\n\241\246\241\327\241\306\241\253\241\241 5\241\275\241\277\241\326\241\316\241\300\241\264...\n");///|ErrorExit(5000,"\nInstall complete. Restarting in 5 seconds...\n");
+	ErrorExit(5000,"\n安装完成。 5秒内重新启动...\n");///|ErrorExit(5000,"\nInstall complete. Restarting in 5 seconds...\n");
 
 	return 0;
 }

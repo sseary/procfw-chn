@@ -332,8 +332,8 @@ int confirm_testrun(void)
 	u32 key;
 	int ret = 0;
 
-	printf("\241\326\241\371\241\274 vshmain\241\355\242\251\242\242\241\364\241\255\241\341\241\244[\241\330\241\322\241\351\241\315]\n\241\334\241\306\241\337\241\246\241\243\241\326\241\374\241\303\241\346\242\246\241\245\242\251\241\253\241\250\241\304\241\311\241\321\241\241\n");///|printf("Are you going to have a test run on fake vshmain? [STRONGLY RECOMMENDED]\nIf it failed you should stop installing and report it back.\n");
-	printf("X - \241\340, O - \241\301\n");///|printf("X - Yes, O - No\n");
+	printf("你要对 vshmain伪装运行测试？[强烈推荐]\n如果失败，你应该停止安装并报告回来。\n");///|printf("Are you going to have a test run on fake vshmain? [STRONGLY RECOMMENDED]\nIf it failed you should stop installing and report it back.\n");
+	printf("X - 是, O - 否\n");///|printf("X - Yes, O - No\n");
 
 	while ( 1 ) {
 		key = ctrl_read();
@@ -355,8 +355,8 @@ int confirm_install(void)
 	u32 key;
 	int ret = 0;
 
-	printf("\241\326\241\371\241\245\242\251\241\254\241\273\241\323\241\244\n");///|printf("Are you going to install the patch?\n");
-	printf("X - \241\340, O - \241\301\n");///|printf("X - Yes, O - No\n");
+	printf("你要安装补丁吗？\n");///|printf("Are you going to install the patch?\n");
+	printf("X - 是, O - 否\n");///|printf("X - Yes, O - No\n");
 
 	while ( 1 ) {
 		key = ctrl_read();
@@ -378,8 +378,8 @@ int confirm_uninstall(void)
 	u32 key;
 	int ret = 0;
 
-	printf("\241\326\241\371\241\363\242\243\241\254\241\273\241\323\241\244\n");///|printf("Are you going to uninstall the patch?\n");
-	printf("X - \241\340, O - \241\301\n");///|printf("X - Yes, O - No\n");
+	printf("你要卸载补丁吗？\n");///|printf("Are you going to uninstall the patch?\n");
+	printf("X - 是, O - 否\n");///|printf("X - Yes, O - No\n");
 
 	while ( 1 ) {
 		key = ctrl_read();
@@ -432,7 +432,7 @@ int gzip_compress(u8 *dst, const u8 *src, int size)
 	ret = deflateInit2(&strm, 9, Z_DEFLATED, 15+16, 8, Z_DEFAULT_STRATEGY);
 
 	if(ret != Z_OK) {
-		printf("%s: \241\367\241\343\241\266\241\360\n", __func__);///|printf("%s: compress error\n", __func__);
+		printf("%s: 压缩错误\n", __func__);///|printf("%s: compress error\n", __func__);
 		free(elf_compress);
 		
 		return -2;
@@ -447,7 +447,7 @@ int gzip_compress(u8 *dst, const u8 *src, int size)
 
 	if(ret == Z_STREAM_ERROR) {
 		deflateEnd(&strm);
-		printf("%s: \241\367\241\343\241\266\241\360\n", __func__);///|printf("%s: compress error\n", __func__);
+		printf("%s: 压缩错误\n", __func__);///|printf("%s: compress error\n", __func__);
 		free(elf_compress);
 
 		return -3;
@@ -496,7 +496,7 @@ int forge_vshmain(u8 *psp_header, u8 *kirk_header)
 	int elfSize = load_elf(PRXPATH);
 
 	if(elfSize < 0) {
-		printf("\241\357\241\275\241\313\242\243 %s\n", PRXPATH);///|printf("cannot load %s\n", PRXPATH);
+		printf("无法加载 %s\n", PRXPATH);///|printf("cannot load %s\n", PRXPATH);
 		
 		return elfSize;
 	}
@@ -504,7 +504,7 @@ int forge_vshmain(u8 *psp_header, u8 *kirk_header)
 	int krawSize = get_kirk_size(kirk_header);
 
 	if(elfSize > krawSize - 0x150) {
-		printf("PRX \241\345\241\267\241\242\n");///|printf("PRX is too big!\n");
+		printf("PRX 太大！\n");///|printf("PRX is too big!\n");
 
 		return -1;
 	}
@@ -513,7 +513,7 @@ int forge_vshmain(u8 *psp_header, u8 *kirk_header)
 	ret = gzip_compress(elf, elf, elfSize);
 
 	if(ret < 0) {
-		printf("\241\357\241\275\241\367\241\343elf\n");///|printf("Could not compress elf\n");
+		printf("无法压缩elf\n");///|printf("Could not compress elf\n");
 		
 		return ret;
 	}
@@ -526,7 +526,7 @@ int forge_vshmain(u8 *psp_header, u8 *kirk_header)
 	memcpy(kirk_raw+0x110, elf, elfSize);
 
 	if(kirk_CMD0(kirk_enc, kirk_raw, sizeof(kirk_enc), 0) != 0) {
-		printf("\241\357\241\275\241\313\241\324elf\n");///|printf("Could not encrypt elf\n");
+		printf("无法加密elf\n");///|printf("Could not encrypt elf\n");
 
 		return -2;
 	}
@@ -536,7 +536,7 @@ int forge_vshmain(u8 *psp_header, u8 *kirk_header)
 	ret = kirk_forge(kirk_enc, sizeof(kirk_enc));
 
 	if(ret != 0) {
-		printf("\241\357\241\275\241\355\242\245cmac\241\320 0x%08X\n", ret);///|printf("Could not forge cmac block 0x%08X\n", ret);
+		printf("无法伪造cmac块 0x%08X\n", ret);///|printf("Could not forge cmac block 0x%08X\n", ret);
 
 		return -3;
 	}
@@ -547,7 +547,7 @@ int forge_vshmain(u8 *psp_header, u8 *kirk_header)
 	ret = write_file(VSHTEMP, out_buffer, (krawSize-0x110)+0x150);
 
 	if(ret != 0) {
-		printf("\241\357\241\275\241\362\241\335\241\356\241\316 0x%08X\n", ret);///|printf("Could not write file 0x%08X\n", ret);
+		printf("无法写入文件 0x%08X\n", ret);///|printf("Could not write file 0x%08X\n", ret);
 		
 		return ret;
 	}
@@ -595,7 +595,7 @@ int is_module_loadable(const char *path)
 		sceKernelUnloadModule(modid);
 		result = 1;
 	} else {
-		printf("\241\325\241\320\241\313\242\243\241\341\241\370 -> 0x%08X\n", modid);///|printf("Module loading test -> 0x%08X\n", modid);
+		printf("模块加载试验 -> 0x%08X\n", modid);///|printf("Module loading test -> 0x%08X\n", modid);
 	}
 
 	return result;
@@ -725,7 +725,7 @@ void uninstall(void)
 		ret = sceIoRemove(VSHMAIN);
 
 		if(ret != 0) {
-			printf("\241\336\241\262 %s\241\337\241\246\n", VSHMAIN);///|printf("Delete %s failed\n", VSHMAIN);
+			printf("删除 %s失败\n", VSHMAIN);///|printf("Delete %s failed\n", VSHMAIN);
 			sceKernelDelayThread(1000000L);
 		}
 	} while(ret != 0);
@@ -734,7 +734,7 @@ void uninstall(void)
 		ret = copy_file(VSHORIG, VSHMAIN);
 
 		if(ret != 0) {
-			printf("\241\302\242\247 %s\241\270 %s\241\337\241\2460x%08X\n", VSHORIG, VSHMAIN, ret);///|printf("Copy %s to %s failed 0x%08X\n", VSHORIG, VSHMAIN, ret);
+			printf("复制 %s到 %s失败0x%08X\n", VSHORIG, VSHMAIN, ret);///|printf("Copy %s to %s failed 0x%08X\n", VSHORIG, VSHMAIN, ret);
 			sceKernelDelayThread(1000000L);
 		}
 	} while(ret != 0);
@@ -743,7 +743,7 @@ void uninstall(void)
 		ret = sceIoRemove(VSHORIG);
 
 		if(ret != 0) {
-			printf("\241\336\241\262 %s\241\337\241\246\n", VSHTEMP);///|printf("Delete %s failed\n", VSHTEMP);
+			printf("删除 %s失败\n", VSHTEMP);///|printf("Delete %s failed\n", VSHTEMP);
 			sceKernelDelayThread(1000000L);
 		}
 	} while(ret != 0);
@@ -757,7 +757,7 @@ void install(void)
 		ret = sceIoRemove(VSHMAIN);
 
 		if(ret != 0) {
-			printf("\241\336\241\262 %s\241\337\241\246\n", VSHMAIN);///|printf("Delete %s failed\n", VSHMAIN);
+			printf("删除 %s失败\n", VSHMAIN);///|printf("Delete %s failed\n", VSHMAIN);
 			sceKernelDelayThread(1000000L);
 		}
 	} while(ret != 0);
@@ -766,7 +766,7 @@ void install(void)
 		ret = copy_file(VSHTEMP, VSHMAIN);
 
 		if(ret != 0) {
-			printf("\241\302\242\247 %s\241\270 %s\241\337\241\246 0x%08X\n", VSHTEMP, VSHMAIN, ret);///|printf("Copy %s to %s failed 0x%08X\n", VSHTEMP, VSHMAIN, ret);
+			printf("复制 %s到 %s失败 0x%08X\n", VSHTEMP, VSHMAIN, ret);///|printf("Copy %s to %s failed 0x%08X\n", VSHTEMP, VSHMAIN, ret);
 			sceKernelDelayThread(1000000L);
 		}
 	} while(ret != 0);
@@ -775,7 +775,7 @@ void install(void)
 		ret = sceIoRemove(VSHTEMP);
 
 		if(ret != 0) {
-			printf("\241\336\241\262 %s\241\337\241\246\n", VSHTEMP);///|printf("Delete %s failed\n", VSHTEMP);
+			printf("删除 %s失败\n", VSHTEMP);///|printf("Delete %s failed\n", VSHTEMP);
 			sceKernelDelayThread(1000000L);
 		}
 	} while(ret != 0);
@@ -790,18 +790,18 @@ int main()
 	fw_version = sceKernelDevkitVersion();
 
 	if(fw_version != 0x06020010 || sctrlHENGetMinorVersion() == 0x8002013A) {
-		printf("\241\263\241\260\241\366\241\365\241\3716.20 PRO\n");///|printf("This program requires 6.20 PRO\n");
+		printf("此程序需要6.20 PRO\n");///|printf("This program requires 6.20 PRO\n");
 		sceKernelDelayThread(2 * 1000000L);
 		goto exit;
 	}
 
 	init_flash();
-	printf("\241\347\241\307\242\242\241\364\241\303\241\374\241\375\241\260\241\366\241\327\241\317\241\342\241\344\241\376\241\271\241\300\241\361\241\241\n\n");///|printf("BY RUNNING THIS APPLICATION YOU ACCEPT ALL THE RISK INVOLVED.\n\n");
+	printf("通过运行该应用程序您接受所有的风险。\n\n");///|printf("BY RUNNING THIS APPLICATION YOU ACCEPT ALL THE RISK INVOLVED.\n\n");
 	
 	if(is_already_installed() != 0) {
 		if(confirm_uninstall()) {
 			uninstall();
-			printf("\241\363\242\243\241\353\241\257\n");///|printf("Uninstall completed\n");
+			printf("卸载完成\n");///|printf("Uninstall completed\n");
 			sceKernelDelayThread(2 * 1000000L);
 		}
 
@@ -819,22 +819,22 @@ int main()
 		ret = copy_file(VSHMAIN, "ef0:/vshorig.prx");
 
 		if(ret < 0) {
-			printf("\241\251\241\277\241\337\241\246 0x%08X\n", ret);///|printf("Backup failed 0x%08X\n", ret);
+			printf("备份失败 0x%08X\n", ret);///|printf("Backup failed 0x%08X\n", ret);
 			sceKernelDelayThread(2 * 1000000L);
 			goto exit;
 		} else {
-			printf("\242\241 vshmain.prx\241\373\241\252\241\247\241\265\241\354 ef0:/vshorig.prx\n");///|printf("The original vshmain.prx has been saved as ef0:/vshorig.prx\n");
+			printf("原 vshmain.prx已被保存为 ef0:/vshorig.prx\n");///|printf("The original vshmain.prx has been saved as ef0:/vshorig.prx\n");
 		}
 	} else {
-		printf("\242\241 vshmain.prx\241\373\241\252\241\247\241\265\241\354 ms0:/vshorig.prx\n");///|printf("The original vshmain.prx has been saved as ms0:/vshorig.prx\n");
+		printf("原 vshmain.prx已被保存为 ms0:/vshorig.prx\n");///|printf("The original vshmain.prx has been saved as ms0:/vshorig.prx\n");
 	}
 
-	printf("\241\331\241\247\241\265\242\244\241\372\241\305\241\245\241\333\241\271\241\272\241\276\n");///|printf("Please keep it in a safe place\n");
+	printf("请保存在一个安全的地方\n");///|printf("Please keep it in a safe place\n");
 
 	ret = copy_file(VSHMAIN, VSHORIG);
 
 	if(ret < 0) {
-		printf("\241\302\242\247 %s\241\270 %s\241\337\241\246 0x%08X\n", VSHMAIN, VSHORIG, ret);///|printf("Copy %s to %s failed 0x%08X\n", VSHMAIN, VSHORIG, ret);
+		printf("复制 %s到 %s失败 0x%08X\n", VSHMAIN, VSHORIG, ret);///|printf("Copy %s to %s failed 0x%08X\n", VSHMAIN, VSHORIG, ret);
 		sceKernelDelayThread(2 * 1000000L);
 		goto exit;
 	}
@@ -842,7 +842,7 @@ int main()
 	ret = get_vshmain_prx_header();
 
 	if(ret < 0) {
-		printf("\241\264\242\241 vshmain\241\312\241\332 PSP\241\350\241\337\241\246 %08X\n", ret);///|printf("Get psp header from original vshmain failed %08X\n", ret);
+		printf("从原 vshmain获取 PSP头失败 %08X\n", ret);///|printf("Get psp header from original vshmain failed %08X\n", ret);
 		sceKernelDelayThread(2 * 1000000L);
 		goto exit;
 	}
@@ -850,7 +850,7 @@ int main()
 	ret = get_vshmain_kirk_header();
 
 	if(ret < 0) {
-		printf("\241\264\242\241 vshmain\241\312\241\332kirk\241\350\241\337\241\246 %08X\n", ret);///|printf("Get kirk header from original vshmain failed %08X\n", ret);
+		printf("从原 vshmain获取kirk头失败 %08X\n", ret);///|printf("Get kirk header from original vshmain failed %08X\n", ret);
 		sceKernelDelayThread(2 * 1000000L);
 		goto exit;
 	}
@@ -859,7 +859,7 @@ int main()
 	ret = forge_vshmain(vshmain_pspheader, vshmain_kirkheader);
 
 	if(ret < 0) {
-		printf("\241\355\242\251 vshmain\241\337\241\246 %08X\n", ret);///|printf("forge fake vshmain failed %08X\n", ret);
+		printf("伪装 vshmain失败 %08X\n", ret);///|printf("forge fake vshmain failed %08X\n", ret);
 		sceKernelDelayThread(2 * 1000000L);
 		goto exit;
 	}
@@ -875,16 +875,16 @@ int main()
 	ret = final_check();
 
 	if(ret < 0) {
-		printf("\242\252\241\310\241\314\241\256\241\337\241\246 %08X\n", ret);///|printf("final check failed %08X\n", ret);
+		printf("最后检查失败 %08X\n", ret);///|printf("final check failed %08X\n", ret);
 		sceKernelDelayThread(2 * 1000000L);
 		goto exit;
 	}
 
 	install();
-	printf("\241\245\242\251\241\353\241\257\n");///|printf("Installed completed\n");
+	printf("安装完成\n");///|printf("Installed completed\n");
 
 exit:
-	printf("\241\352\241\261\242\250...\n");///|printf("Exiting...\n");
+	printf("退出中...\n");///|printf("Exiting...\n");
 	sceKernelDelayThread(1000000);
 	sceKernelExitGame();
 	

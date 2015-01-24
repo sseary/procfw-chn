@@ -50,6 +50,14 @@ void proDebugScreenPrintf(const char *fmt, ...); //__attribute__((format(printf,
 
 /**
   * Do a printf to the debug screen.
+  *
+  * @param fmt - Format string to print
+  * @param ... - Arguments
+  */
+void proDebugScreenPrintf_chn(int mode, const char *fmt, ...); //__attribute__((format(printf,1,2)));///+
+
+/**
+  * Do a printf to the debug screen.
   * @note This is for kernel mode only as it uses a kernel function
   * to perform the printf instead of using vsnprintf, use normal printf for
   * user mode.
@@ -104,6 +112,11 @@ void proDebugScreenPutChar(int x, int y, u32 color, u8 ch);
 void proDebugScreenSetXY(int x, int y);
 
 /**
+  * Set the current X and Y co-ordinate for the screen (in character units)
+  */
+void proDebugScreenSetXY_chn(int x, int y);///+
+
+/**
   * Set the video ram offset used for the screen
   *
   * @param offset - Offset in bytes
@@ -126,11 +139,26 @@ void proDebugScreenSetBase(u32* base);
 void proDebugScreenSetMaxX(unsigned int maxx);
 
 /**
+ * Set the X maximum coordinate (in character units)
+ * @note Thus line length will be X + 1 characters.
+ *
+ * @param maxx - The X maximum coordinate 
+ */
+void proDebugScreenSetMaxX_chn(unsigned int maxx);///+
+
+/**
  * Set the Y maximum coordinate (in character units)
  *
  * @param maxx - The X maximum coordinate 
  */
 void proDebugScreenSetMaxY(unsigned int maxy);
+
+/**
+ * Set the Y maximum coordinate (in character units)
+ *
+ * @param maxx - The X maximum coordinate 
+ */
+void proDebugScreenSetMaxY_chn(unsigned int maxy);///+
 
 /** 
   * Get the current X co-ordinate (in character units)
@@ -150,6 +178,11 @@ int proDebugScreenGetY(void);
   * Clear the debug screen.
   */
 void proDebugScreenClear(void);
+
+/**
+  * Clear the debug screen.
+  */
+void proDebugScreenClear_chn(int mode);///+
 
 /**
   * Print non-nul terminated strings.

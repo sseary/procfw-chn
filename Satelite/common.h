@@ -133,6 +133,8 @@ enum {
 
 extern const char **g_messages;
 extern const char *g_messages_en[];
+extern const char *g_messages_chs[];///+
+extern const char *g_messages_cht[];///+
 extern int cur_language;
 
 #endif

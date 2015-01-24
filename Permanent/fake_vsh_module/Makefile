@@ -1,5 +1,5 @@
 TARGET = hen
-OBJS = main.o exploit.o ../../PXE/Launcher/launcher_patch_offset.o syscall.o imports.o
+OBJS = main.o exploit.o ../../PXE/Launcher/launcher_patch_offset.o syscall.o imports.o printf_chs.o
 
 all:
 

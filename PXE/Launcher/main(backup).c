@@ -15,23 +15,27 @@
  * along with PRO CFW. If not, see <http://www.gnu.org/licenses/ .
  */
 
+#include <pspkernel.h>
 #include <pspdebug.h>
 #include <pspctrl.h>
 #include <pspsdk.h>
 #include <pspiofilemgr.h>
 #include <psputility.h>
-#include <psputility_htmlviewer.h>
 #include <psploadexec.h>
 #include <psputils.h>
 #include <psputilsforkernel.h>
-#include <pspsysmem.h>
 #include <psppower.h>
 #include <string.h>
+#include <zlib.h>
+#include "systemctrl.h"
+#include "rebootex.h"
 #include "utils.h"
 #include "printk.h"
+
+#include "installer.h"
+#include "Rebootex_prx.h"
+#include "launcher_patch_offset.h"
 #include "rebootex_conf.h"
-#include "../Rebootex_bin/rebootex.h"
-#include "../PXE/Launcher/launcher_patch_offset.h"
 #include "printf_chs.h"///+
 
 #define INTR(intr) \
@@ -41,56 +45,24 @@
 #define INTR_LOW(intr) \
 	_sw((intr&0xFFFF0000) + (((intr) + (data_address & 0xFFFF)) & 0xFFFF), address); address +=4;
 
-PSP_MODULE_INFO("FastRecovery", PSP_MODULE_USER, 1, 0);
+PSP_MODULE_INFO("PXELauncher", PSP_MODULE_USER, 1, 0);
 PSP_MAIN_THREAD_ATTR(PSP_THREAD_ATTR_USER | PSP_THREAD_ATTR_VFPU);
-PSP_HEAP_SIZE_KB(0);
+PSP_HEAP_SIZE_KB(128);
 
-/**
- * Taken from M33 SDK.
- * Describes a Module Structure from the chained Module List.
- */
-typedef struct SceModule2
-{
-	struct SceModule2 * next; // 0
-	unsigned short attribute; // 4
-	unsigned char version[2]; // 6
-	char modname[27]; // 8
-	char terminal; // 0x23
-	char mod_state;  // 0x24
-	char unk1;    // 0x25
-	char unk2[2]; // 0x26
-	unsigned int unk3; // 0x28
-	SceUID modid; // 0x2C
-	unsigned int unk4; // 0x30
-	SceUID mem_id; // 0x34
-	unsigned int mpid_text;  // 0x38
-	unsigned int mpid_data; // 0x3C
-	void * ent_top; // 0x40
-	unsigned int ent_size; // 0x44
-	void * stub_top; // 0x48
-	unsigned int stub_size; // 0x4C
-	unsigned int entry_addr_; // 0x50
-	unsigned int unk5[4]; // 0x54
-	unsigned int entry_addr; // 0x64
-	unsigned int gp_value; // 0x68
-	unsigned int text_addr; // 0x6C
-	unsigned int text_size; // 0x70
-	unsigned int data_size;  // 0x74
-	unsigned int bss_size; // 0x78
-	unsigned int nsegment; // 0x7C
-	unsigned int segmentaddr[4]; // 0x80
-	unsigned int segmentsize[4]; // 0x90
-} SceModule2;
+//installer path
+char installerpath[256];
 
+//psp model
 int psp_model = 0;
-u32 psp_fw_version = 0;
 
-int dump_kmem = 0;
+u32 psp_fw_version = 0;
 
 //load reboot function
 int (* LoadReboot)(void * arg1, unsigned int arg2, void * arg3, unsigned int arg4) = NULL;
 
 extern int sceKernelPowerLock(unsigned int, unsigned int);
+
+u8 decompress_buf[1024*1024L];
 
 void do_exploit_639(void);
 void do_exploit_660(void);
@@ -161,7 +133,8 @@ int _LoadReboot(void * arg1, unsigned int arg2, void * arg3, unsigned int arg4)
 
 	//reset reboot flags
 	memset((char *)REBOOTEX_CONFIG, 0, 0x100);
-	memset((char *)REBOOTEX_CONFIG_ISO_PATH, 0, 256);
+	//copy installer path
+	memcpy((char *)REBOOTEX_CONFIG_ISO_PATH, installerpath, sizeof(installerpath));
 
 	build_rebootex_configure();
 
@@ -263,13 +236,6 @@ void recovery_sysmem_635(void)
 }
 #endif
 
-#if defined(CONFIG_660) || defined(CONFIG_661)
-void recovery_sysmem_660()
-{
-	_sw(0x3C058801, SYSMEM_TEXT_ADDR + g_offs->sysmem_patch.sceKernelPowerLockForUser); // lui $a1, 0x8801
-}
-#endif
-
 #ifdef CONFIG_639
 void recovery_sysmem_639()
 {
@@ -277,19 +243,14 @@ void recovery_sysmem_639()
 }
 #endif
 
+//our 6.35 kernel permission call
 int kernel_permission_call(void)
 {
 	struct sceLoadExecPatch *patch;
-	
+
 	//cache invalidation functions
 	void (* _sceKernelIcacheInvalidateAll)(void) = (void *)(SYSMEM_TEXT_ADDR + g_offs->sysmem_patch.sceKernelIcacheInvalidateAll);
 	void (* _sceKernelDcacheWritebackInvalidateAll)(void) = (void *)(SYSMEM_TEXT_ADDR + g_offs->sysmem_patch.sceKernelDcacheWritebackInvalidateAll);
-
-#if defined(CONFIG_660) || defined(CONFIG_661)
-	if((psp_fw_version == FW_660) || (psp_fw_version == FW_661)) {
-		recovery_sysmem_660();
-	}
-#endif
 
 #ifdef CONFIG_639
 	if(psp_fw_version == FW_639) {
@@ -329,7 +290,7 @@ int kernel_permission_call(void)
 	} else {
 		patch = &g_offs->loadexec_patch_other;
 	}
-	
+
 	//replace LoadReboot function
 	_sw(MAKE_CALL(_LoadReboot), loadexec->text_addr + patch->LoadRebootCall);
 
@@ -338,13 +299,7 @@ int kernel_permission_call(void)
 
 	//save LoadReboot function
 	LoadReboot = (void*)loadexec->text_addr + patch->LoadReboot;
-	
-	if (dump_kmem) {
-		memcpy((void*)0x08A00000, (void*)0x88000000, 0x400000);
-		memcpy((void*)(0x08A00000+0x400000), (void*)0xBFC00200, 0x100);
-	}
 
-	//sync cache
 	_sceKernelIcacheInvalidateAll();
 	_sceKernelDcacheWritebackInvalidateAll();
 
@@ -352,15 +307,125 @@ int kernel_permission_call(void)
 	return 0xC01DB15D;
 }
 
-void input_dump_kmem(void)
+#if 0
+void freezeme(unsigned int color)
 {
-	SceCtrlData ctl;
-	sceCtrlReadBufferPositive(&ctl, 1);
-
-	if (ctl.Buttons & PSP_CTRL_LTRIGGER) {
-		dump_kmem = 1;
-		CHS_ScreenPrintf("\241\247\241\244\241\247\241\242\241\246\241\241\241\250\241\242\241\243 ms0:/KMEM.BIN\241\245 ms0:/SEED.BIN\r\n");///|pspDebugScreenPrintf("Kernel memory will be dumped into ms0:/KMEM.BIN and ms0:/SEED.BIN\r\n");
+	while(1)
+	{
+		unsigned int *p = (unsigned int*) 0x04000000;
+		while (p < (unsigned int*) 0x04400000) *p++ = color;
 	}
+}
+#endif
+
+int install_in_cfw(void)
+{
+	//installer load result
+	int result = 0;
+
+	//load installer module
+	SceUID mod = sceKernelLoadModule(installerpath, 0, NULL);
+
+	//installer loaded
+	if (mod >= 0) {
+		//start installer
+		result = sceKernelStartModule(mod, strlen(installerpath) + 1, installerpath, NULL, NULL);
+	}
+
+	return 0;
+}
+
+int write_file(const char *path, unsigned char *buf, int size)
+{
+	SceUID fd;
+	int ret;
+
+	fd = sceIoOpen(path, PSP_O_WRONLY | PSP_O_CREAT | PSP_O_TRUNC, 0777);
+
+	if (fd < 0) {
+		goto error;
+	}
+
+	ret = sceIoWrite(fd, buf, size);
+
+	if (ret < 0) {
+		goto error;
+	}
+
+	sceIoClose(fd);
+
+	return 0;
+error:
+	if (fd >= 0)
+		sceIoClose(fd);
+
+	return -1;
+}
+
+int gzip_decompress(u8 *dst, const u8 *src, int size)
+{
+	int ret;
+	z_stream strm;
+
+	strm.zalloc = Z_NULL;
+	strm.zfree = Z_NULL;
+	strm.opaque = Z_NULL;
+
+	ret = inflateInit2(&strm, 15+16);
+
+	if(ret != Z_OK) {
+		return -1;
+	}
+
+	strm.avail_in = size;
+	strm.next_in = (void*)src;
+	strm.avail_out = 1024*1024L;
+	strm.next_out = decompress_buf;
+
+	ret = inflate(&strm, Z_FINISH);
+
+	if(ret == Z_STREAM_ERROR) {
+		inflateEnd(&strm);
+
+		return -3;
+	}
+
+	memcpy(dst, decompress_buf, strm.total_out);
+	deflateEnd(&strm);
+
+	return strm.total_out;
+}
+
+static u8 file_buffer[1024 * 1024L];
+
+void write_files(const char *base)
+{
+	char fn[256];
+	int newsize;
+
+	newsize = gzip_decompress(file_buffer, installer, size_installer);
+
+	if(newsize < 0) {
+		CHS_ScreenPrintf("无法解压安装程序 %d\n", newsize);///|pspDebugScreenPrintf("cannot decompress installer %d\n", newsize);
+
+		return;
+	}
+
+	strcpy(fn, base);
+	strcat(fn, "installer.prx");
+	write_file(fn, file_buffer, newsize);
+
+	newsize = gzip_decompress(file_buffer, Rebootex_prx, size_Rebootex_prx);
+	
+	if(newsize < 0) {
+		CHS_ScreenPrintf("无法解压rebootex %d\n", newsize);///|pspDebugScreenPrintf("cannot decompress rebootex %d\n", newsize);
+		
+		return;
+	}
+
+	strcpy(fn, base);
+	strcat(fn, "Rebootex.prx");
+	write_file(fn, file_buffer, newsize);
 }
 
 #if defined(CONFIG_620) || defined(CONFIG_635)
@@ -525,14 +590,64 @@ void do_exploit(void)
 //entry point
 int main(int argc, char * argv[])
 {
-	psp_fw_version = sceKernelDevkitVersion();
-	setup_patch_offset_table(psp_fw_version);
-
-	printk_init("ms0:/fastrecovery.txt");
-	printk("Hello exploit\r\n");
 	CHS_ScreenInit();///|pspDebugScreenInit();
 
-	input_dump_kmem();
+	psp_fw_version = sceKernelDevkitVersion();
+
+#if defined(CONFIG_660) || defined(CONFIG_661)
+	if((psp_fw_version == FW_660) || (psp_fw_version == FW_661)) {
+		goto version_OK;
+	}
+#endif
+
+#ifdef CONFIG_639
+	if(psp_fw_version == FW_639) {
+		goto version_OK;
+	}
+#endif
+
+#ifdef CONFIG_620
+	if(psp_fw_version == FW_620) {
+		goto version_OK;
+	}
+#endif
+
+#ifdef CONFIG_635
+	if(psp_fw_version == FW_635) {
+		goto version_OK;
+	}
+#endif
+
+	CHS_ScreenPrintf("抱歉，这个程序不支持你的FW(0x%08X)！\n", (uint)psp_fw_version);///|pspDebugScreenPrintf("Sorry. This program doesn't support your FW(0x%08X).\n", (uint)psp_fw_version);
+	sceKernelDelayThread(5*1000000);
+	goto exit;
+
+version_OK:
+	setup_patch_offset_table(psp_fw_version);
+	
+	//puzzle installer path
+	strcpy(installerpath, argv[0]);
+
+	char * slash = strrchr(installerpath, '/');
+	if (slash) slash[1] = '\0';
+	
+	write_files(installerpath);
+	strcat(installerpath, "installer.prx");
+
+	printk_init("ms0:/launcher.txt");
+	printk("Hello exploit\n");
+
+	if(sctrlHENGetVersion() >= 0) {
+		install_in_cfw();
+
+		return 0;
+	}
+
+#if defined(CONFIG_660) || defined(CONFIG_661)
+	if((psp_fw_version == FW_660) || (psp_fw_version == FW_661)) {
+		do_exploit_660();
+	}
+#endif
 
 #ifdef CONFIG_639
 	if(psp_fw_version == FW_639) {
@@ -546,30 +661,7 @@ int main(int argc, char * argv[])
 	}
 #endif
 
-#if defined(CONFIG_660) || defined(CONFIG_661)
-	{
-		do_exploit_660();
-	}
-#endif
-
-	if ( dump_kmem ) {
-		SceUID fd;
-
-		fd = sceIoOpen("ms0:/kmem.bin", PSP_O_WRONLY | PSP_O_CREAT | PSP_O_TRUNC, 0777);
-
-		if (fd >= 0) {
-			sceIoWrite(fd, (void*)0x08A00000, 0x400000);
-			sceIoClose(fd);
-		}
-
-		fd = sceIoOpen("ms0:/seed.bin", PSP_O_WRONLY | PSP_O_CREAT | PSP_O_TRUNC, 0777);
-
-		if (fd >= 0) {
-			sceIoWrite(fd, (void*)(0x08A00000+0x400000), 0x100);
-			sceIoClose(fd);
-		}
-	}
-
+exit:
 	//trigger reboot
 	sceKernelExitGame();
 

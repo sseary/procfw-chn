@@ -167,7 +167,7 @@ int smart_write_file(const char *path, unsigned char *buf, int size)
 		}
 	}
 
-	printf("\241\320\241\307 %s...", path);///|printf("Writing %s...", path);
+	printf("写入 %s...", path);///|printf("Writing %s...", path);
 	ret = write_file(path, buf, size);
 
 	if (ret == 0) {
@@ -291,7 +291,7 @@ int install_cfw(void)
 	return 0;
 
 exit:
-	printf("\n\241\320\241\307\241\315\241\300\241\265\241\316(0x%08x)\241\245\241\251\241\342\241\337\241\334\241\243\n", ret);///|printf("\nWrite file error (0x%08x)! Install aborted.\n", ret);
+	printf("\n写入文件错误(0x%08x)，安装终止！\n", ret);///|printf("\nWrite file error (0x%08x)! Install aborted.\n", ret);
 
 	return -1;
 }
@@ -453,7 +453,7 @@ void uninstall_permanent_patch(void)
 		ret = sceIoRemove(VSHMAIN);
 
 		if(ret != 0) {
-			printf("\241\310\241\264 %s\241\311\241\253\n", VSHMAIN);///|printf("Delete %s failed\n", VSHMAIN);
+			printf("删除 %s失败\n", VSHMAIN);///|printf("Delete %s failed\n", VSHMAIN);
 			sceKernelDelayThread(1000000L);
 		}
 	} while(ret != 0);
@@ -462,7 +462,7 @@ void uninstall_permanent_patch(void)
 		ret = copy_file(VSHORIG, VSHMAIN);
 
 		if(ret != 0) {
-			printf("\241\272\241\335 %s\241\266 %s\241\311\241\253 0x%08X\n", VSHORIG, VSHMAIN, ret);///|printf("Copy %s to %s failed 0x%08X\n", VSHORIG, VSHMAIN, ret);
+			printf("复制 %s到 %s失败 0x%08X\n", VSHORIG, VSHMAIN, ret);///|printf("Copy %s to %s failed 0x%08X\n", VSHORIG, VSHMAIN, ret);
 			sceKernelDelayThread(1000000L);
 		}
 	} while(ret != 0);
@@ -471,7 +471,7 @@ void uninstall_permanent_patch(void)
 		ret = sceIoRemove(VSHORIG);
 
 		if(ret != 0) {
-			printf("\241\310\241\264 %s\241\311\241\253\n", VSHTEMP);///|printf("Delete %s failed\n", VSHTEMP);
+			printf("删除 %s失败\n", VSHTEMP);///|printf("Delete %s failed\n", VSHTEMP);
 			sceKernelDelayThread(1000000L);
 		}
 	} while(ret != 0);
@@ -486,13 +486,13 @@ int uninstall_cfw(void)
 	sceIoRemove("flash1:/config.se");
 
 	int i; for(i=0; i<NELEMS(g_file_lists); ++i) {
-		printf("\241\310\241\264 %s...", g_file_lists[i].dst);///|printf("Removing %s...", g_file_lists[i].dst);
+		printf("删除 %s...", g_file_lists[i].dst);///|printf("Removing %s...", g_file_lists[i].dst);
 		ret = sceIoRemove(g_file_lists[i].dst);
 
 		if(ret == 0 || ret == 0x80010002) {
 			printf("OK\n");
 		} else {
-			printf("\241\311\241\253(0x%08X)\n", ret);///|printf("failed(0x%08X)\n", ret);
+			printf("失败(0x%08X)\n", ret);///|printf("failed(0x%08X)\n", ret);
 		}
 	}
 
@@ -511,7 +511,7 @@ int uninstall_cfw(void)
 	}
 
 	if(is_permanent_patch_installed()) {
-		printf("\241\321\241\327\241\326\241\301\241\255\241\270...");///|printf("Uninstalling permanent patch...");
+		printf("卸载永久补丁...");///|printf("Uninstalling permanent patch...");
 		uninstall_permanent_patch();
 		printf("OK\n");
 	}
@@ -535,11 +535,11 @@ void start_reboot(int mode)
 		ret = sceKernelStartModule(modid, sizeof(mode), &mode, 0, NULL);
 
 		if (ret < 0) {
-			printf("\241\305\241\271\241\303\241\302\241\265\241\316 0x%08x\n", ret);///|printf("start module error 0x%08x\n", ret);
+			printf("启动模块错误 0x%08x\n", ret);///|printf("start module error 0x%08x\n", ret);
 			delay = 5000000;
 		}
 	} else {
-		printf("\241\275\241\327\241\303\241\302\241\265\241\316 0x%08x\n", modid);///|printf("load module error 0x%08x\n", modid);
+		printf("加载模块错误 0x%08x\n", modid);///|printf("load module error 0x%08x\n", modid);
 		delay = 5000000;
 	}
 
@@ -583,7 +583,7 @@ int main(int argc, char *argv[])
 	}
 #endif
 	
-	printf("\241\254\241\306\241\245\241\331\241\273\241\261\241\324\241\256\241\332\241\262\241\304\241\267FW(0x%08X)\241\243\n", (uint)psp_fw_version);///|printf("Sorry. This program doesn't support your FW(0x%08X).\n", (uint)psp_fw_version);
+	printf("抱歉，这个程序不支持你的FW(0x%08X)！\n", (uint)psp_fw_version);///|printf("Sorry. This program doesn't support your FW(0x%08X).\n", (uint)psp_fw_version);
 	goto exit;
 	
 version_OK:
@@ -592,10 +592,10 @@ version_OK:
 	init_flash();
 	usage();
 
-	printf("\241\252\241\250\241\277\241\251\241\342CFW\n");///|printf("Press X to launch CFW.\n");
-	printf("\241\252\241\242\241\277\241\321\241\327CFW\n");///|printf("Press Triangle to uninstall CFW.\n");
-	printf("\241\252\241\341\241\246\241\244\241\250\241\277\241\340\241\342CFW\n");///|printf("Hold L to reinstall CFW.\n");
-	printf("\241\252\241\247\241\277\241\312\241\263\n\n");///|printf("Press R to exit.\n");
+	printf("按Ｘ键安装CFW\n");///|printf("Press X to launch CFW.\n");
+	printf("按△键卸载CFW\n");///|printf("Press Triangle to uninstall CFW.\n");
+	printf("按住Ｌ＋Ｘ键重装CFW\n");///|printf("Hold L to reinstall CFW.\n");
+	printf("按Ｒ键退出\n\n");///|printf("Press R to exit.\n");
 
 	sceCtrlReadBufferPositive(&ctl, 1);
 	key = ctl.Buttons;
@@ -607,7 +607,7 @@ version_OK:
 	}
 
 	if (key & PSP_CTRL_RTRIGGER) {
-		printf("\241\312\241\263\241\336...\n");///|printf("Exiting...\n");
+		printf("退出中...\n");///|printf("Exiting...\n");
 		cleanup_exit();
 		sceKernelDelayThread(100000);
 		sceKernelExitGame();
@@ -615,31 +615,31 @@ version_OK:
 
 	switch(psp_model) {
 		case PSP_GO:
-			printf("\241\276\241\257\241\266 PSP GO BRITE ....\n");///|printf("PSP GO BRITE Detected ....\n");
+			printf("检测到 PSP GO BRITE ....\n");///|printf("PSP GO BRITE Detected ....\n");
 			break;
 		case PSP_9000:
-			printf("\241\276\241\257\241\266 PSP BRITE 3000(09g) ....\n");///|printf("PSP BRITE 3000(09g) Detected ....\n");
+			printf("检测到 PSP BRITE 3000(09g) ....\n");///|printf("PSP BRITE 3000(09g) Detected ....\n");
 			break;
 		case PSP_7000:
-			printf("\241\276\241\257\241\266 PSP BRITE 3000(07g) ....\n");///|printf("PSP BRITE 3000(07g) Detected ....\n");
+			printf("检测到 PSP BRITE 3000(07g) ....\n");///|printf("PSP BRITE 3000(07g) Detected ....\n");
 			break;
 		case PSP_4000:
-			printf("\241\276\241\257\241\266 PSP BRITE 3000(04g) ....\n");///|printf("PSP BRITE 3000(04g) Detected ....\n");
+			printf("检测到 PSP BRITE 3000(04g) ....\n");///|printf("PSP BRITE 3000(04g) Detected ....\n");
 			break;
 		case PSP_3000:
-			printf("\241\276\241\257\241\266 PSP BRITE 3000 ....\n");///|printf("PSP BRITE 3000 Detected ....\n");
+			printf("检测到 PSP BRITE 3000 ....\n");///|printf("PSP BRITE 3000 Detected ....\n");
 			break;
 		case PSP_2000:
-			printf("\241\276\241\257\241\266 PSP SLIM 2000 ....\n");///|printf("PSP SLIM 2000 Detected ....\n");
+			printf("检测到 PSP SLIM 2000 ....\n");///|printf("PSP SLIM 2000 Detected ....\n");
 			break;
 		case PSP_1000:
-			printf("\241\276\241\257\241\266 PSP FAT 1000 ....\n");///|printf("PSP FAT 1000 Detected ....\n");
+			printf("检测到 PSP FAT 1000 ....\n");///|printf("PSP FAT 1000 Detected ....\n");
 			break;
 		case PSP_11000:
-			printf("\241\276\241\257\241\266 PSP E1000 ....\n");///|printf("PSP STREET E1000 Detected ....\n");
+			printf("检测到 PSP E1000 ....\n");///|printf("PSP STREET E1000 Detected ....\n");
 			break;
 		default:
-			printf("\241\314\241\333PSP\241\323\241\274 0%dg\n", psp_model+1);///|printf("Unknown PSP model 0%dg\n", psp_model+1);
+			printf("未知PSP型号 0%dg\n", psp_model+1);///|printf("Unknown PSP model 0%dg\n", psp_model+1);
 			break;
 	}
 
@@ -653,7 +653,7 @@ version_OK:
 		ret = install_cfw();
 
 		if (ret == 0) {
-			printf("\241\325\241\313\241\260\241\241\n\241\252\241\250\241\277\241\305\241\271CFW\n");///|printf(" Completed.\nPress X to start CFW.\n");
+			printf("已完成。\n按Ｘ键启动CFW\n");///|printf(" Completed.\nPress X to start CFW.\n");
 
 			sceCtrlReadBufferPositive(&ctl, 1);
 			key = ctl.Buttons;
@@ -664,18 +664,18 @@ version_OK:
 				key = ctl.Buttons;
 			}
 
-			printf("\241\317\241\330\241\340\241\322\241\305\241\271 " VERSION_STR " :)\n");///|printf("Now reboot to " VERSION_STR " :)\n");
+			printf("现在重新启动 " VERSION_STR " :)\n");///|printf("Now reboot to " VERSION_STR " :)\n");
 			start_reboot(1);
 		}
 	} else if (key & PSP_CTRL_TRIANGLE) {
 		ret = uninstall_cfw();
-		printf("\241\317\241\330\241\340\241\322\241\305\241\271 OFW :)\n");///|printf("Now reboot to OFW :)\n");
+		printf("现在重新启动 OFW :)\n");///|printf("Now reboot to OFW :)\n");
 		sceKernelDelayThread(1000000);
 		start_reboot(0);
 	}
 
 exit:
-	printf("\241\252\241\250\241\277\241\312\241\263\n");///|printf("Press X to exit.\n");
+	printf("按Ｘ键退出\n");///|printf("Press X to exit.\n");
 
 	sceCtrlReadBufferPositive(&ctl, 1);
 	key = ctl.Buttons;
